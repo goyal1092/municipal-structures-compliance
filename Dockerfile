@@ -47,5 +47,7 @@ RUN set -ex; \
   yarn; \
   yarn build
 
+RUN python manage.py collectstatic --noinput
+
 EXPOSE 5000
 CMD /app/bin/start.sh
