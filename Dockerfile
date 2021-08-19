@@ -47,5 +47,7 @@ RUN set -ex; \
   yarn; \
   yarn build
 
+RUN mkdir staticfiles
+
 EXPOSE 5000
 CMD /app/bin/start.sh
