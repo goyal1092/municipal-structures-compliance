@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<main class="questionnaires mt-5 pt-5">
+		<div class="container">
+			{% for section in sections %}
+				<div class="border-bottom">
+					<div class="p-2 alert alert-dark">{{section.label}}</div>
+					<div class= "p-2">
+						{% for question in section.questions %}
+							<div class="border-bottom pt-4 pb-4">
+								<p><b>{{ question.sno }}</b> {{ question.text }}</p>
+								<div class="pl-4">
+									<p>{{ question.instruction }}</p>
+									{% include question.input_type %}
+								</div>
+								<div class="pt-4 pl-4">
+									{% for question in question.children %}
+
+										<p><b>{{ question.sno }}</b> {{ question.text }}</p>
+										<div class="">
+											<p>{{ question.instruction }}</p>
+											{% include question.input_type %}
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</main>
+{% endblock %}

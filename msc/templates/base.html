@@ -25,7 +25,13 @@
     <meta property="og:description" content="{% block og_description %}Website for DCOG municipal form compliance.{% endblock %}" />
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static "scss/msc.css" %}">
+    <link rel="stylesheet" href="{% static 'scss/msc.css' %}">
+
+    <!-- REMOVE -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- REMOVE -->
   </head>
   <body>
     {% if TAG_MANAGER_ENABLED %} 
@@ -35,6 +41,26 @@
     <!-- End Google Tag Manager (noscript) -->
     {% endif %} 
 
+    {% block nav %} 
+      <nav class="navbar navbar-expand-lg navbar-light navbar-laravel border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="/">DCOG Tool</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            {% if request.user.is_authenticated %}
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/logout/">Logout</a>
+                    </li>
+                </ul>
+              </div>
+            {% endif %}
+        </div>
+    </nav>
+    {% endblock %}
     {% block content %}{% endblock %}
 
     <script src="{% static "js/msc.js" %}" async></script>

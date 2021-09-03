@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "django_json_widget",
+    "msc.questionnaire",
 ]
 
 MIDDLEWARE = [
@@ -155,6 +157,41 @@ logging.config.dictConfig(
         },
     }
 )
+
+QUESTION_INPUT_TYPES = tuple([(d, d.capitalize()) for d in [
+    "dropdown",
+    "shottext",
+    "longtext",
+    "checkbox",
+    "radio",
+    "number"
+]])
+
+DEFAULT_INPUT_OPTIONS = {
+    "dropdown": {
+        "choices": []
+    },
+    "shottext": {
+        "max_length": 255,
+    },
+    "longtext": {
+        "max_length": 1000,
+    },
+    "checkbox": {
+        "choices": []
+    },
+    "radio": {
+        "choices": [1, 0],
+        "labels": ["Yes", "No"],
+    },
+    "number": {
+        "min_value": 0,
+        "max_value": 100,
+    }
+}
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", True)

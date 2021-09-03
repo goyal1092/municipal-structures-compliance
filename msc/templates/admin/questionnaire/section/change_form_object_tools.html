@@ -1,0 +1,11 @@
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+
+
+{% for question_type in question_types %}
+    <li>
+        <a href="{% url 'admin:questionnaire_question_add' %}?section={{original.pk}}&input_type={{question_type.0}}" class="addlink">Add {{ question_type.1 }} Question</a>
+    </li>
+{% endfor %}
+
+{% endblock %}

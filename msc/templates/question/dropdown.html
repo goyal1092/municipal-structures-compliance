@@ -1,0 +1,5 @@
+<select class="form-control" id="exampleFormControlSelect1">
+	{% for choice in question.options.choices %}
+      <option>{{ choice }}</option>
+    {% endfor %}
+</select>
