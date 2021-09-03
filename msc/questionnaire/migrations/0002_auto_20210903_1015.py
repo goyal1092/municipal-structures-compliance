@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='question',
             name='input_type',
-            field=models.CharField(choices=[('dropdown', 'Dropdown'), ('shottext', 'Shottext'), ('longtext', 'Longtext'), ('checkbox', 'Checkbox'), ('radio', 'Radio'), ('number', 'Number')], db_index=True, max_length=32),
+            field=models.CharField(choices=[('dropdown', 'Dropdown'), ('shorttext', 'Shorttext'), ('longtext', 'Longtext'), ('checkbox', 'Checkbox'), ('radio', 'Radio'), ('number', 'Number')], db_index=True, max_length=32),
         ),
         migrations.AlterField(
             model_name='question',
