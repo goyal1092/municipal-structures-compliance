@@ -160,7 +160,7 @@ logging.config.dictConfig(
 
 QUESTION_INPUT_TYPES = tuple([(d, d.capitalize()) for d in [
     "dropdown",
-    "shottext",
+    "shorttext",
     "longtext",
     "checkbox",
     "radio",
@@ -171,7 +171,7 @@ DEFAULT_INPUT_OPTIONS = {
     "dropdown": {
         "choices": []
     },
-    "shottext": {
+    "shorttext": {
         "max_length": 255,
     },
     "longtext": {
