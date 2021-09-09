@@ -1,3 +1,8 @@
 {
-  "stack": "container"
+  "stack": "container",
+  "environments": {
+    "review": {
+      "addons": ["heroku-postgresql:hobby-dev"]
+    }
+  }
 }
