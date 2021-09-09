@@ -1,3 +1,9 @@
+setup:
+  addons:
+    - plan: heroku-postgresql:hobby-dev
+  config:
+    DJANGO_DEBUG: 1
+    DJANGO_SECRET_KEY: default-change-me
 build:
   docker:
     web: Dockerfile
