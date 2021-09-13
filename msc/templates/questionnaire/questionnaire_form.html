@@ -1,34 +1,99 @@
 {% extends "base.html" %}
+{% load custom_tags %}
 
 {% block content %}
-	<main class="questionnaires mt-5 pt-5">
-		<div class="container">
-			{% for section in sections %}
-				<div class="border-bottom">
-					<div class="p-2 alert alert-dark">{{section.label}}</div>
-					<div class= "p-2">
-						{% for question in section.questions %}
-							<div class="border-bottom pt-4 pb-4">
-								<p><b>{{ question.sno }}</b> {{ question.text }}</p>
-								<div class="pl-4">
-									<p>{{ question.instruction }}</p>
-									{% include question.input_type %}
-								</div>
-								<div class="pt-4 pl-4">
-									{% for question in question.children %}
+    <main class="questionnaires mt-5 pt-5">
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message|safe }}</div>
+                {% endfor %}
+            {% endif %}
 
-										<p><b>{{ question.sno }}</b> {{ question.text }}</p>
-										<div class="">
-											<p>{{ question.instruction }}</p>
-											{% include question.input_type %}
-										</div>
-									{% endfor %}
-								</div>
-							</div>
-						{% endfor %}
-					</div>
-				</div>
-			{% endfor %}
-		</div>
-	</main>
+            {% if form_save_type and form_save_type == "save" %}
+                <p class="text-info">Form saved successfully.</p>
+                {% if errors %}
+                    <p class="text-info">We noticed some issues while saving progress. Please fix issues before you submit the form</p>
+                {% endif %}
+            {% endif %}
+
+            {% if form_save_type and form_save_type == "submission" %}
+                {% if errors or submission_errors%}
+                    <p class="text-danger">Not able to submit forms as there were some issues while submitting</p>
+                    <p class="text-info">Any progress/updates made before submission are saved successfully</p>
+                {% else %}
+                    <p class="text-info">Form submitted successfully</p>
+                {% endif %}
+            {% endif %}
+
+            <form method="post" action="{% url 'questionnaire-detail' questionnaire.id %}">
+                {% csrf_token %}
+                <div class="row pb-5">
+                    <div class="col-md-12 ">
+                        <button type="submit" name="submit_form" class="btn btn-primary mr-2 float-right" value="submit">Submit Form</button>
+                        <button type="submit" name="save_progress" class="btn btn-info mr-2 float-right" value="save">Save Progress</button>
+                    </div>
+                </div>
+                <input type="hidden" name="questionnaire_id" value="{{questionnaire.id}}">
+                {% for section in sections %}
+                <div class="border-bottom">
+                    <div class="p-2 alert alert-dark">{{section.label}}</div>
+
+                    <div class= "p-2">
+                        {% for question in section.questions %}
+                            <div class="border-bottom pt-4 pb-4">
+                                <p><b>{{ question.sno }}</b> {{ question.obj.text }}</p>
+                                <div class="pl-4">
+                                    <p>{{ question.obj.instruction }}</p>
+                                    {% include question.template %}
+                                    {% if question.sno in errors %}
+                                      <p class="text-danger">{{errors|keyvalue:question.sno}}</p>
+                                    {% endif %}
+                                    {% if question.obj.id in submission_errors %}
+                                      <p class="text-danger">{{submission_errors|keyvalue:question.obj.id}}</p>
+                                    {% endif %}
+                                    <p class="text-info text-right">
+                                        {% if question.response %}
+                                          {% if question.response.version == 1 %}
+                                            Answered by
+                                          {% elif question.response.version > 1 %}
+                                            Answer updated by
+                                          {% endif %}
+                                          {{ question.response.respondent.email }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="pt-4 pl-4">
+                                    {% for question in question.children %}
+                                        <p><b>{{ question.sno }}</b> {{ question.obj.text }}</p>
+                                        <div class="">
+                                            <p>{{ question.obj.instruction }}</p>
+                                            {% include question.template %}
+                                            {% if question.sno in errors %}
+                                              <p class="text-danger">{{errors|keyvalue:question.sno}}</p>
+                                            {% endif %}
+                                            {% if question.obj.id in submission_errors %}
+                                              <p class="text-danger">{{submission_errors|keyvalue:question.obj.id}}</p>
+                                            {% endif %}
+                                            <p class="text-info text-right">
+                                                {% if question.response %}
+                                                  {% if question.response.version == 1 %}
+                                                    Answered by
+                                                  {% elif question.response.version > 1 %}
+                                                    Answer updated by
+                                                  {% endif %}
+                                                  {{ question.response.respondent.email }}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+        </div>
+    </main>
 {% endblock %}

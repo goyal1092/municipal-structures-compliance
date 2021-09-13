@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from .models import Questionnaire, Question, Section
+from .models import Questionnaire, Question, Section, QuestionLogic
 from django_json_widget.widgets import JSONEditorWidget
 from django.conf import settings
 from django.urls import reverse
@@ -14,19 +14,26 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-    
+
+
+class QuestionLogicInline(admin.StackedInline):
+    model = QuestionLogic
+    fk_name="question"
+    extra=0
 
 @admin.register(Question)
 class Question(admin.ModelAdmin):
     model = Question
     fields = (
         'section', 'input_type', 'name', 'text',
-        'instruction', 'parent', 'order', 'options'
+        'instruction', 'parent', 'order', 'options',
+        'is_mandatory'
     )
     list_filter = ['section__label', 'input_type']
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
+    inlines = [QuestionLogicInline,]
 
     def get_changeform_initial_data(self, request):
         input_type = request.GET.get("input_type", None)

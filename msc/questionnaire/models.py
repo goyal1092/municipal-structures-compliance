@@ -59,9 +59,19 @@ class Question(MSCBase):
     options = models.JSONField(default=dict, null=True, blank=True)
     order = models.PositiveIntegerField(default=0, blank=False, null=False)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+    is_mandatory = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['order']
 
     def __str__(self):
         return f"{self.section.label} -> {self.name}"
+
+
+class QuestionLogic(MSCBase):
+    action = models.CharField(max_length=32, choices=settings.LOGIC_ACTION)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    target = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="target")
+    when = models.CharField(max_length=32, choices=settings.LOGIC_WHEN)
+    values = models.CharField(max_length=255, null=True, blank=True)
+    

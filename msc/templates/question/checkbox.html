@@ -1,8 +1,6 @@
-<form>
-{% for choice in question.options.choices %}
+{% for choice in question.obj.options.choices %}
 <div class="form-check form-check-inline">
-  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="{{choice}}">
+  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="{{choice}}" name="{{ question.sno }}" {% if choice in question.response.value %} checked=checked {% endif %}>
   <label class="form-check-label" for="inlineCheckbox1">{{choice}}</label>
 </div>
 {% endfor %}
-</form>

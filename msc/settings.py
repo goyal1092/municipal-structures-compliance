@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_json_widget",
     "msc.questionnaire",
+    "msc.response",
+    "msc.organisation",
 ]
 
 MIDDLEWARE = [
@@ -169,26 +171,52 @@ QUESTION_INPUT_TYPES = tuple([(d, d.capitalize()) for d in [
 
 DEFAULT_INPUT_OPTIONS = {
     "dropdown": {
-        "choices": []
+        "choices": [],
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
     },
     "shorttext": {
-        "max_length": 255,
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
     },
     "longtext": {
-        "max_length": 1000,
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
     },
     "checkbox": {
-        "choices": []
+        "choices": [],
+        "validations": {},
+        "placeholder": "",
+        "response_type": "list"
     },
     "radio": {
-        "choices": [1, 0],
-        "labels": ["Yes", "No"],
+        "choices": ["Yes", "No"],
+        "validations": {},
+        "placeholder": "",
+        "response_type": "list"
     },
     "number": {
-        "min_value": 0,
-        "max_value": 100,
+        "validations": {},
+        "placeholder": "",
+        "response_type": "int"
     }
 }
+
+LOGIC_ACTION = (
+    ("make_required", "Make Required"),
+    ("show", "Show"),
+    ("hide", "Hide")
+)
+
+LOGIC_WHEN = (
+    ("answered", "target is answered"),
+    ("parent", "parent is answered"),
+    ("parent_value", "parent response is equal to"),
+    ("target_value", "target response is equal to"),
+)
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

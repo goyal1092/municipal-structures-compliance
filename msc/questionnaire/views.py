@@ -1,71 +1,73 @@
 import string
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import Questionnaire
+from .utils import get_serialized_questioner
 from django.shortcuts import get_object_or_404
+
+from msc.organisation.models import Organisation
+from msc.response.views import save_response, submit_form
+from msc.response.models import Response
+
+from django.views.generic import TemplateView
 
 
 
 @login_required
 def questionnaire_list(request):
-	"""
-	"""
-	context = {
-		"questionnaires": Questionnaire.objects.filter(is_published=True),
-	}
-	return render(request, 'questionnaire/list.html', context)
+    context = {
+        "questionnaires": Questionnaire.objects.filter(is_published=True),
+    }
+    return render(request, 'questionnaire/list.html', context)
 
 
+class QuestionnaireDetail(TemplateView):
+    template_name = 'questionnaire/questionnaire_form.html'
 
-def serialize_question(question, section_no, question_no, is_child=False):
-	if is_child:
-		question_no = string.ascii_lowercase[question_no]
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        questionnaire = get_object_or_404(Questionnaire, pk=pk)
+        organisation_id = request.session.get("organisation_id", None)
+        organisation = get_object_or_404(Organisation, pk=organisation_id)
+        context = {
+            "questionnaire": questionnaire,
+            "sections": get_serialized_questioner(questionnaire, organisation)
+        }
+        return render(request, 'questionnaire/questionnaire_form.html', context)
 
-	sno = f"{section_no}.{question_no}"
-	return {
-		"sno": sno,
-		"text": question.text,
-		"input_type": f"question/{question.input_type}.html",
-		"instruction": question.instruction,
-		"name": question.name,
-		"options": question.options,
-	}
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        questionnaire = get_object_or_404(Questionnaire, pk=pk)
+        organisation_id = request.session.get("organisation_id", None)
+        organisation = get_object_or_404(Organisation, pk=organisation_id)
 
-@login_required
-def questionnaire_detail(request, pk):
-	"""
-	"""
-	questionnaire = get_object_or_404(Questionnaire, pk=pk)
-	data = []
+        response, created = Response.objects.get_or_create(
+            questionnaire=questionnaire, organisation=organisation
+        )
+        form_save_type = "save"
+        if response.is_submitted:
+            response.is_submitted = False
+            response.save()
 
-	sections = questionnaire.section_set.all()
+        is_submitted = request.POST.get("submit_form", None) == "submit"
+        context = {}
 
-	for idx, section in enumerate(sections):
-		subdata = {}
-		section_no = idx + 1
-		questions = section.question_set.filter(parent__isnull=True)
+        validation_errors = save_response(request, organisation, questionnaire, response)
+        if is_submitted:
+            form_save_type = "submission"
+            submission_errors = submit_form(questionnaire, response)
+            if not submission_errors and not validation_errors:
+                response.is_submitted = True
+                response.save()
 
-		serialized_quesions = []
-		for qidx, question in enumerate(questions):
-			question_no = qidx + 1
-			ques_details = serialize_question(question, section_no, question_no)
-			child_questions = []
-			for cidx, child in enumerate(list(section.question_set.filter(parent=question))):
-				child_questions.append(serialize_question(child, ques_details["sno"], cidx, True))
+            context["submission_errors"] = submission_errors
 
-			ques_details["children"] = child_questions
-			serialized_quesions.append(ques_details)
-
-		data.append({
-			"label": f"Section - {idx+1} {section.label}",
-			"questions": serialized_quesions
-		})
-
-
-	context = {
-		"questionnaires": Questionnaire.objects.filter(is_published=True),
-		"sections": data
-	}
-	return render(request, 'questionnaire/questionnaire_form.html', context)
+        context.update({
+            "questionnaire": questionnaire,
+            "errors": validation_errors,
+            "sections": get_serialized_questioner(questionnaire, organisation),
+            "form_save_type": form_save_type
+        })
+        return render(request, 'questionnaire/questionnaire_form.html', context)
