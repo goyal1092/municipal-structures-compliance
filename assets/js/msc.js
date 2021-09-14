@@ -1,8 +1,15 @@
 // Instantiate MDC Drawer
-if (document.getElementById("mdc-drawer-opener")) {
+const opener = document.getElementById("mdc-drawer-opener");
+if (opener) {
   const drawerEl = document.querySelector(".mdc-drawer");
   const drawer = new mdc.drawer.MDCDrawer.attachTo(drawerEl);
-  document.getElementById("mdc-drawer-opener").addEventListener("click", () => {
-    drawer.open = !drawer.open;
+  opener.addEventListener("click", () => {
+    if (drawer.open) {
+      opener.innerText = "menu";
+      drawer.open = false;
+    } else {
+      opener.innerText = "close";
+      drawer.open = true;
+    }
   });
 }
