@@ -25,13 +25,14 @@
     <meta property="og:description" content="{% block og_description %}Website for DCOG municipal form compliance.{% endblock %}" />
     {% endblock %}
 
+    <!-- Material Design -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <!-- End Material Design -->
+    
     <link rel="stylesheet" href="{% static 'scss/msc.css' %}">
-
-    <!-- REMOVE -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- REMOVE -->
   </head>
   <body>
     {% if TAG_MANAGER_ENABLED %} 
@@ -41,27 +42,51 @@
     <!-- End Google Tag Manager (noscript) -->
     {% endif %} 
 
-    {% block nav %} 
-      <nav class="navbar navbar-expand-lg navbar-light navbar-laravel border-bottom">
-        <div class="container">
-            <a class="navbar-brand" href="/">DCOG Tool</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            {% if request.user.is_authenticated %}
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/accounts/logout/">Logout</a>
-                    </li>
-                </ul>
+    <header class="mdc-top-app-bar">
+      <div class="mdc-top-app-bar__row is-contained">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+          <span class="mdc-top-app-bar__title">
+            <a href="/">
+              <img class="logo" src="/static/images/logo.png" alt="Page title" />
+            </a>
+          </span>
+        </section>
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+          {% if request.user.is_authenticated %}
+            <div class="is-text-align-right">
+              <div class="user-text">
+                <div>
+                  <span class="is-bold">
+                    {{ request.user.display_name }}
+                  </span>
+                  <span class="is-tag">
+                    Contributor
+                  </span>
+                </div>
+                <div class="is-text-color-light-grey">
+                  Beaufort West Local Municipality
+                </div>
               </div>
-            {% endif %}
+              <div class="user-avatar-text">
+                {{ request.user.initials }}
+              </div>
+            </div>
+          {% endif %}
+          <a style="display: none" href="/account/logout" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Logout">logout</a>
+          <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+        </section>
+      </div>
+    </header>
+    <main class="mdc-top-app-bar--fixed-adjust">
+      <div class="breadcrumb-wrapper">
+        <div class="is-contained">
+          {% block breadcrumbs %}{% endblock %}
         </div>
-    </nav>
-    {% endblock %}
-    {% block content %}{% endblock %}
+      </div>
+      <div class=" is-contained">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
 
     <script src="{% static "js/msc.js" %}" async></script>
   </body>
