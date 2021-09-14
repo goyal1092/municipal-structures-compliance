@@ -12,6 +12,7 @@ body {
   color: #000;
   padding-top: 3px;
   padding-bottom: 3px;
+  box-shadow: 0 2px 14px 0 rgb(0 0 0 / 5%);
 
   .mdc-top-app-bar__navigation-icon {
     color: #000;
@@ -105,4 +106,24 @@ body {
   box-sizing: border-box;
   text-align: center;
 
+}
+
+.mdc-drawer-app-content {
+  flex: auto;
+  overflow: auto;
+  position: relative;
+}
+
+.main-content {
+  overflow: auto;
+  height: 100%;
+}
+
+.app-bar {
+  position: absolute;
+}
+
+// Only apply this style if below top app bar.
+.mdc-top-app-bar {
+  z-index: 7;
 }

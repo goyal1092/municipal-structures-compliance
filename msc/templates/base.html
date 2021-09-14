@@ -28,8 +28,7 @@
     <!-- Material Design -->
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" >
     <!-- End Material Design -->
     
     <link rel="stylesheet" href="{% static 'scss/msc.css' %}">
@@ -41,8 +40,8 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     {% endif %} 
-
-    <header class="mdc-top-app-bar">
+    
+    <header id="app-bar" class="mdc-top-app-bar">
       <div class="mdc-top-app-bar__row is-contained">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
           <span class="mdc-top-app-bar__title">
@@ -53,41 +52,58 @@
         </section>
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
           {% if request.user.is_authenticated %}
-            <div class="is-text-align-right">
-              <div class="user-text">
-                <div>
-                  <span class="is-bold">
-                    {{ request.user.display_name }}
-                  </span>
-                  <span class="is-tag">
-                    Contributor
-                  </span>
-                </div>
-                <div class="is-text-color-light-grey">
-                  Beaufort West Local Municipality
-                </div>
+          <div class="is-text-align-right">
+            <div class="user-text">
+              <div>
+                <span class="is-bold">
+                  {{ request.user.display_name }}
+                </span>
+                <span class="is-tag">
+                  Contributor
+                </span>
               </div>
-              <div class="user-avatar-text">
-                {{ request.user.initials }}
+              <div class="is-text-color-light-grey">
+                Beaufort West Local Municipality
               </div>
             </div>
+            <div class="user-avatar-text">
+              {{ request.user.initials }}
+            </div>
+          </div>
+          <button id="mdc-drawer-opener" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button mdc-drawer-opener" aria-label="Open navigation menu">menu</button>
           {% endif %}
-          <a style="display: none" href="/account/logout" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Logout">logout</a>
-          <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
         </section>
       </div>
     </header>
-    <main class="mdc-top-app-bar--fixed-adjust">
-      <div class="breadcrumb-wrapper">
-        <div class="is-contained">
-          {% block breadcrumbs %}{% endblock %}
+    
+    <aside class="mdc-drawer mdc-drawer--modal">
+      <div class="mdc-drawer__content mdc-top-app-bar--fixed-adjust">
+        <nav class="mdc-list">
+          <a class="mdc-list-item mdc-list-item--activated" href="/accounts/logout" aria-current="page" tabindex="0">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">logout</i>
+            <span class="mdc-list-item__text">Logout</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+  
+    <div class="mdc-drawer-scrim"></div>
+  
+    <div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
+      <main id="main-content" class="main-content">
+        <div class="breadcrumb-wrapper">
+          <div class="is-contained">
+            {% block breadcrumbs %}{% endblock %}
+          </div>
         </div>
-      </div>
-      <div class=" is-contained">
-        {% block content %}{% endblock %}
-      </div>
-    </main>
+        <div class=" is-contained">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
 
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script src="{% static "js/msc.js" %}" async></script>
   </body>
 </html>
