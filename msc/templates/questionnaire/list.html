@@ -5,22 +5,22 @@
 	</a>
 {% endblock %}
 {% block content %}
-	<main class="questionnaires mt-5 pt-5">
-		<div class="container">
-			{% for questionnaire in questionnaires %}
-				<div class="card col-md-5 p-0">
-					<div class="p-2 pb-3"> 
-						<h5 class="text-center pb-3 border-bottom">{{ questionnaire.name }}</h5>
-						<ul class="">
-						  <li>Start Date: {{ questionnaire.start }}</li>
-						  <li>End Date: {{ questionnaire.close }}</li>
-						  <li>Total Responses: {{ questionnaire.response_count }}</li>
-						</ul>				
-					</div>
-					<a href="{% url 'questionnaire-detail' questionnaire.id %}" class="btn btn-primary btn-block">Take Questionnaire</a>
-				</div>
+    <main class="questionnaires mt-5 pt-5">
+        <div class="container">
+            {% for questionnaire in questionnaires %}
+                <div class="card col-md-5 p-0">
+                    <div class="p-2 pb-3"> 
+                        <h5 class="text-center pb-3 border-bottom">{{ questionnaire.name }}</h5>
+                        <ul class="">
+                          <li>Start Date: {{ questionnaire.start }}</li>
+                          <li>End Date: {{ questionnaire.close }}</li>
+                          <li>Total Responses: {{ questionnaire.response_count }}</li>
+                        </ul>               
+                    </div>
+                    <a href="{% url 'questionnaire-detail' questionnaire.id %}" class="btn btn-primary btn-block">Take Questionnaire</a>
+                </div>
 
-			{% endfor %}
-		</div>
-	</main>
+            {% endfor %}
+        </div>
+    </main>
 {% endblock %}
