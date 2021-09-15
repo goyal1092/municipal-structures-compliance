@@ -49,13 +49,13 @@ body {
     background-color: hsla(0, 0%, 100%, 0.14);
     border-radius: 5px;
     padding: 0.5em;
-    
+
     &:before {
       content: "›";
       font-weight: bold;
       font-size: larger;
     }
-    
+
     &:first-child:before {
       content: "";
     }
@@ -68,6 +68,10 @@ body {
 
 .is-bold {
   font-weight: 700;
+}
+
+.is-medium {
+  font-weight: 500;
 }
 
 .is-tag {
@@ -105,7 +109,6 @@ body {
   padding-top: 12px;
   box-sizing: border-box;
   text-align: center;
-
 }
 
 .mdc-drawer-app-content {
@@ -126,4 +129,32 @@ body {
 // Only apply this style if below top app bar.
 .mdc-top-app-bar {
   z-index: 7;
+}
+
+h1.is-small {
+  font-size: 1.6em;
+}
+
+.mdc-typography--headline1 {
+  font-size: 1.6em;
+  font-weight: 500;
+  margin: 0;
+}
+
+.mdc-drawer-opener {
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  margin-left: 0.75em;
+}
+
+.menu-list-bottom {
+  position: absolute;
+  bottom: 0;
+  padding-bottom: 2em;
+  width: 100%;
+}
+
+.mdc-drawer__content {
+  .mdc-list-item__text {
+    margin-left: 0.75em;
+  }
 }
