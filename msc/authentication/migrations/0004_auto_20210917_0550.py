@@ -73,7 +73,14 @@ def create_staff_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('contenttypes', '__latest__'), # required or emit_post_migrate_signal will bail out
+        ('auth', '__latest__'), # possibly required if using guardian / allauth
+        ('sessions', '__latest__'), # possibly required if using guardian / allauth
+        ('organisation', '0002_auto_20210910_0255'),
+        ('questionnaire', '0004_auto_20210911_1447'),
+        ('response', '0002_auto_20210910_1057'),
         ('authentication', '0003_remove_user_is_admin'),
+        
     ]
 
     operations = [
