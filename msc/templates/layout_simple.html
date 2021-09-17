@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block layout %}
+<main class="is-contained is-half is-vertically-centered py-3">
+  <div>
+    <img
+      class="is-aligned-center mb-3"
+      src="/static/images/logo_large.png"
+      alt="Cooperative Governance Logo"
+      width="250"
+      height="100"
+    />
+    {% block content %}{% endblock %}
+  </div>
+</main>
+{% endblock layout %}

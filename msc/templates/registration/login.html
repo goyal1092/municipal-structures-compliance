@@ -1,50 +1,62 @@
-{% extends "base.html" %}
-{% block breadcrumbs %}
-	<a href="/">
-		Login
-	</a>
-{% endblock %}
+{% extends "layout_simple.html" %}
 {% block content %}
-    
-    <main class="login-form pt-5">
-        <div class="cotainer">
-            <div class="row justify-content-center">
-                <div class="col-md-5">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message|safe }}</div>
-                        {% endfor %}
-                    {% endif %}
-                    <div class="card">
-                        <div class="card-header">Login</div>
-                            <div class="card-body">
-                                <form method="post" action="{% url 'custom-login' %}">
-                                    {% csrf_token %}
-                                    <div class="form-group row">
-                                        <label for="email_address" class="col-md-4 col-form-label text-md-right">Username</label>
-                                        <div class="col-md-6">
-                                            <input type="text" id="email_address" class="form-control" name="username" required autofocus>
-                                        </div>
-                                    </div>
+  {% if messages %} {% for message in messages %}
+  <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">
+    {{ message|safe }}
+  </div>
+  {% endfor %} {% endif %}
 
-                                    <div class="form-group row">
-                                        <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
-                                        <div class="col-md-6">
-                                            <input type="password" id="password" class="form-control" name="password" required>
-                                        </div>
-                                    </div>
-                                        <div class="col-md-6 offset-md-4">
-                                            <button type="submit" value="login" class="btn btn-primary btn-block pt-2">
-                                                Login
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
+  <form method="post" action="{% url 'custom-login' %}">
+    {% csrf_token %}
+    <div class="mdc-form-field--wrapper">
+      <label
+        class="mdc-text-field mdc-text-field--filled mdc-text-field--fullwidth"
+      >
+        <span class="mdc-text-field__ripple"></span>
+        <span class="mdc-floating-label" id="my-label-id">Username</span>
+        <input
+          name="username"
+          class="mdc-text-field__input"
+          type="text"
+          aria-labelledby="username"
+          required
+          autofocus
+        />
+        <span class="mdc-line-ripple"></span>
+      </label>
+    </div>
+    <div class="mdc-form-field--wrapper">
+      <label
+        class="mdc-text-field mdc-text-field--filled mdc-text-field--fullwidth"
+      >
+        <span class="mdc-text-field__ripple"></span>
+        <span class="mdc-floating-label" id="my-label-id">Password</span>
+        <input
+          name="password"
+          type="password"
+          class="mdc-text-field__input"
+          type="text"
+          aria-labelledby="password"
+          required
+        />
+        <span class="mdc-line-ripple"></span>
+      </label>
+    </div>
+    <div class="mdc-form-field--wrapper">
+      <button
+        type="submit"
+        value="login"
+        class="
+          mdc-button
+          mdc-button--raised
+          mdc-button--leading
+          mdc-button--fullwidth
+        "
+      >
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">Log in</span>
+      </button>
+    </div>
+  </form>
+  
 {% endblock %}

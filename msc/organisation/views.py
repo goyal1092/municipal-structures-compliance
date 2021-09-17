@@ -27,4 +27,4 @@ def login(request):
                 return redirect('questionnaire-list')
         else:
             messages.error(request, 'Invalid credentials')
-    return render(request, 'registration/login.html')
+    return render(request, 'registration/login.html', context)
