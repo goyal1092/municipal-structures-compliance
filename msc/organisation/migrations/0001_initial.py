@@ -8,11 +8,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     initial = True
-
-    dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-    ]
-
     operations = [
         migrations.CreateModel(
             name='Organisation',
@@ -22,7 +17,6 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True, help_text='Date and time this object was last modified.')),
                 ('name', models.CharField(max_length=256)),
                 ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='organisation.organisation')),
-                ('users', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,
