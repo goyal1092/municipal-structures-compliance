@@ -7,3 +7,9 @@ build:
     web: Dockerfile
 run:
   web: gunicorn msc.wsgi:application --log-file - --bind 0.0.0.0:$PORT
+release:
+  image: web
+  command:
+    - python manage.py collectstatic --noinput
+    #- python manage.py co --noinput #TODO: Remove once migration fix works
+    #- python manage.py migrate --noinput
