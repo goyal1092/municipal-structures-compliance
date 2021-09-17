@@ -50,7 +50,10 @@ INSTALLED_APPS = [
     "msc.questionnaire",
     "msc.response",
     "msc.organisation",
+    "msc.authentication",
 ]
+
+AUTH_USER_MODEL = "authentication.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -102,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+AUTHENTICATION_BACKENDS = ('msc.authentication.backends.EmailBackend',)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

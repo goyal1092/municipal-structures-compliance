@@ -1,7 +1,5 @@
 from django.db import models
 from django.conf import settings
-from .user_methods import *
-
 
 class MSCBase(models.Model):
     created = models.DateTimeField(auto_now_add=True,
