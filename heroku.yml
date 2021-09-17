@@ -10,6 +10,5 @@ run:
 release:
   image: web
   command:
-    - python manage.py migrate --noinput
     - python manage.py migrate auth --noinput #TODO: Remove once migration fix works
     - python manage.py migrate --noinput
