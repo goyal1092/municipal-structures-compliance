@@ -26,7 +26,11 @@ class Questionnaire(MSCBase):
 
     @property
     def response_count(self):
-        return 0
+        return self.response_set.count()
+
+    @property
+    def question_count(self):
+        return Question.objects.filter(section__questionnaire=self).count()
 
 
 class Section(MSCBase):
