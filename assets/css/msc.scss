@@ -137,8 +137,14 @@ body {
   z-index: 7;
 }
 
-h1.is-small {
-  font-size: 1.6em;
+h1 {
+  &.is-small {
+    font-size: 1.6em;
+  }
+
+  .material-icons {
+    vertical-align: middle;
+  }
 }
 
 .mdc-typography--headline1 {
@@ -223,7 +229,7 @@ img.is-aligned-center {
   justify-content: center;
   align-items: center;
 
-  >div {
+  > div {
     width: 100%;
   }
 }
