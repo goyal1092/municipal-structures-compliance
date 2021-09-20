@@ -121,6 +121,22 @@ class QuestionnaireAdmin(admin.ModelAdmin):
         form.current_user = request.user
         return form
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+
+        if not request.user.organisation:
+            return Questionnaire.objects.none()
+
+        questionnaire_ids = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            sharer_object_id=request.user.organisation.id
+        ).values_list("target_object_id", flat=True)
+
+        return qs.filter(id__in=questionnaire_ids)
+
 class QuestionLogicInline(admin.StackedInline):
     model = QuestionLogic
     fk_name="question"
@@ -147,6 +163,22 @@ class Question(admin.ModelAdmin):
             options = settings.DEFAULT_INPUT_OPTIONS.get(input_type, "")
             defaults['options'] = options
         return defaults
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+
+        if not request.user.organisation:
+            return Question.objects.none()
+
+        questionnaire_ids = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            sharer_object_id=request.user.organisation.id
+        ).values_list("target_object_id", flat=True)
+
+        return qs.filter(section__questionnaire_id__in=questionnaire_ids)
     
 
 @admin.register(Section)
@@ -163,6 +195,23 @@ class SectionAdmin(admin.ModelAdmin):
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+
+        if not request.user.organisation:
+            return Question.objects.none()
+
+        questionnaire_ids = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            sharer_object_id=request.user.organisation.id
+        ).values_list("target_object_id", flat=True)
+
+        return qs.filter(questionnaire_id__in=questionnaire_ids)
+
 
     def get_questions_count(self, instance):
         if instance:
