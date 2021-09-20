@@ -37,7 +37,7 @@
           <span class="is-tag is-light">{{questionnaire.close | timeuntil}} left</span>
         </td>
         <td class="has-nowrap">
-          {{ questionnaire.response_set.count }}/24
+          {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
         </td>
       </tr>
       {% endfor %}

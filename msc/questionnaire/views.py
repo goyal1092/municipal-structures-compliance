@@ -17,7 +17,8 @@ from .models import Questionnaire
 from .utils import get_serialized_questioner, check_user_org
 
 
-#@check_user_org
+#TODO: Restore check, it breaks for logged out users
+# @check_user_org
 @login_required
 def questionnaire_list(request):
 
