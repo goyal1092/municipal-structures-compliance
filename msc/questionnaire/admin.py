@@ -5,16 +5,82 @@ from django_json_widget.widgets import JSONEditorWidget
 from django.conf import settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.contrib.contenttypes.models import ContentType
 
+from msc.authentication.models import Share
+from .widgets import SharesWidget
+from msc.organisation.models import Organisation
+
+from django import forms
+
+class QuestionnaireForm(forms.ModelForm):
+    class Meta:
+        model = Questionnaire
+        fields = '__all__'
+
+    shares = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['shares'].widget = SharesWidget(
+                instance=self.instance, current_user=self.current_user
+            )
+        else:
+            self.fields['shares'].widget = SharesWidget(
+                instance=None, current_user=self.current_user
+            )
 
 @admin.register(Questionnaire)
 class QuestionnaireAdmin(admin.ModelAdmin):
     list_display = ("name", "start", "close")
-    fields = ('name', 'start', 'close', 'is_published', 'configuration', )
+    fields = ('name', 'start', 'close', 'is_published', 'configuration', 'shares',)
+    form = QuestionnaireForm
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        user = request.user
+        org_type = ContentType.objects.get_for_model(
+            Organisation
+        )
+        ques_type = ContentType.objects.get_for_model(
+            Questionnaire
+        )
+
+        if not change:
+            creator_org = user.organisation_id
+            if user.is_superuser:
+                try:
+                    creator_org = int(request.POST["creator"])
+                except:
+                    pass
+
+            if not creator_org:
+                creator_org = Organisation.objects.filter(parent__isnull=True).first().id
+
+            # creator share
+            Share.objects.create(
+                target_content_type=ques_type,
+                target_object_id=obj.id,
+                sharer_content_type=org_type,
+                sharer_object_id=creator_org,
+                shared_by=request.user,
+            )
+
+        shares = form.cleaned_data["shares"]
+
+        print(shares)
+
+
+            
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
 
 class QuestionLogicInline(admin.StackedInline):
     model = QuestionLogic

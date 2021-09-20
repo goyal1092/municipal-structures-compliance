@@ -29,8 +29,7 @@ class QuestionnaireDetail(TemplateView):
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
-        organisation_id = request.session.get("organisation_id", None)
-        organisation = get_object_or_404(Organisation, pk=organisation_id)
+        organisation = request.user.organisation
         context = {
             "questionnaire": questionnaire,
             "sections": get_serialized_questioner(questionnaire, organisation)
@@ -40,8 +39,7 @@ class QuestionnaireDetail(TemplateView):
     def post(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
-        organisation_id = request.session.get("organisation_id", None)
-        organisation = get_object_or_404(Organisation, pk=organisation_id)
+        organisation = request.user.organisation
 
         response, created = Response.objects.get_or_create(
             questionnaire=questionnaire, organisation=organisation

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import environ
+import os
 
 ROOT_DIR = environ.Path(__file__) - 2
 PROJ_DIR = ROOT_DIR.path("msc")
@@ -38,7 +39,6 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
-    "msc.forms.apps.FormsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -66,12 +66,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 ROOT_URLCONF = "msc.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["msc/templates"],
+        "DIRS": [
+            os.path.join(PROJECT_ROOT, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -221,6 +225,12 @@ LOGIC_WHEN = (
     ("parent_value", "parent response is equal to"),
     ("target_value", "target response is equal to"),
 )
+
+SHARER_RELATIONSHIP_TYPES = tuple([(d, d.capitalize()) for d in [
+    "creator",
+    "admin",
+    "viewer",
+]])
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

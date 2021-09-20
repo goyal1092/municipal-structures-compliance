@@ -9,7 +9,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 # Register your models here.
 
-from .models import User
+from .models import User, Share
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
 
@@ -94,3 +94,8 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(Share)
+class ShareAdmin(admin.ModelAdmin):
+    model = Share
