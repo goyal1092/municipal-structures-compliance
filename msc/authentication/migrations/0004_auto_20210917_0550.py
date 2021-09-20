@@ -79,6 +79,7 @@ class Migration(migrations.Migration):
         ('organisation', '0002_auto_20210910_0255'),
         ('questionnaire', '0004_auto_20210911_1447'),
         ('response', '0002_auto_20210910_1057'),
+        ('auth', '__latest__'),
         ('authentication', '0003_remove_user_is_admin'),
         
     ]

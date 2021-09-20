@@ -34,6 +34,6 @@ class CustomUserChangeForm(UserChangeForm):
         super().__init__(*args, **kwargs)
         if self.instance:
             is_admin = self.instance.is_admin
-            if not self.instance.organisation.parent:
+            if self.instance.organisation and not self.instance.organisation.parent:
                 is_admin = self.instance.is_national
             self.fields['is_admin'].initial = is_admin
