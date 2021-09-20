@@ -7,7 +7,6 @@ from .organisation.views import login
 from .response.views import save_response
 
 urlpatterns = [
-    path("forms", include("msc.forms.urls"),),
     path("admin/", admin.site.urls),
     path("accounts/", include('django.contrib.auth.urls')),
     path("login/", login, name="custom-login"),

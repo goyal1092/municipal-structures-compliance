@@ -1,6 +1,18 @@
 import string
 from .models import Questionnaire
 from msc.response.models import Response
+from django.contrib.auth import logout
+from django.contrib import messages
+from django.shortcuts import redirect
+
+
+def check_user_org(function):
+    def _function(request,*args, **kwargs):
+        if request.user.organisation is None:
+            messages.error(request, 'User Does not belong to any organisation')
+            return redirect('login')
+        return function(request, *args, **kwargs)
+    return _function
 
 
 def serialize_question(
