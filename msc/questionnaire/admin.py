@@ -99,7 +99,6 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                 )
 
         elif request.user.is_national:
-
             organisations = Organisation.objects.filter(
                 id__in=shares
             ).exclude(
@@ -115,9 +114,6 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                     shared_by=request.user,
                     relationship="viewer"
                 )
-
-
-
             
 
     def get_form(self, request, obj=None, **kwargs):
