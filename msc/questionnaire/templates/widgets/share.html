@@ -36,7 +36,7 @@
     <div class="form-row field-is_published">
         {% for org in organisations %}
             <div class="checkbox-row">
-                <input type="checkbox" name="shares" id="id_share_with" {% if org in has_shares_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with">
+                <input type="checkbox" name="shares" id="id_share_with" value="{{ org.id }}" {% if org in has_shares_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with">
                     {{ org.name }}
                 </label>
             </div>

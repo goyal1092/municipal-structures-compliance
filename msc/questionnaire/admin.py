@@ -68,11 +68,54 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                 sharer_content_type=org_type,
                 sharer_object_id=creator_org,
                 shared_by=request.user,
+                relationship="creator"
             )
 
-        shares = form.cleaned_data["shares"]
+        shares = [int(idx) for idx in request.POST.getlist("shares", [])]
+        shared_with = Share.objects.filter(
+                target_content_type=ques_type,
+                target_object_id=obj.id,
+                sharer_content_type=org_type,
+            )
 
-        print(shares)
+        if shared_with:
+            shared_with = [share.sharer.id for share in shared_with]
+
+        if request.user.is_superuser:
+            organisations = Organisation.objects.filter(
+                org_type_id__in=shares
+            ).exclude(
+                id__in=shared_with
+            ).values_list("id", flat=True)
+
+            for org in organisations:
+                Share.objects.create(
+                    target_content_type=ques_type,
+                    target_object_id=obj.id,
+                    sharer_content_type=org_type,
+                    sharer_object_id=org,
+                    shared_by=request.user,
+                    relationship="viewer"
+                )
+
+        elif request.user.is_national:
+
+            organisations = Organisation.objects.filter(
+                id__in=shares
+            ).exclude(
+                id__in=shared_with
+            ).values_list("id", flat=True)
+
+            for org in organisations:
+                Share.objects.create(
+                    target_content_type=ques_type,
+                    target_object_id=obj.id,
+                    sharer_content_type=org_type,
+                    sharer_object_id=org,
+                    shared_by=request.user,
+                    relationship="viewer"
+                )
+
 
 
             

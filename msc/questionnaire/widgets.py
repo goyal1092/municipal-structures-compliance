@@ -26,7 +26,7 @@ class SharesWidget(Widget):
         if current_user.is_superuser:
             organisations = Organisation.objects.all()
         else:
-            organisations = current_user.organisation.get_children()
+            organisations = current_user.organisation.get_children(include_self=False)
 
         shares = None
 
