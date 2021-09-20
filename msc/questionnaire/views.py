@@ -3,26 +3,38 @@ import string
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .models import Questionnaire
-from .utils import get_serialized_questioner, check_user_org
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from django.contrib import messages
+from django.views.generic import TemplateView
 
 from msc.organisation.models import Organisation
 from msc.response.views import save_response, submit_form
 from msc.response.models import Response
+from msc.authentication.models import Share
 
-from django.views.generic import TemplateView
+from .models import Questionnaire
+from .utils import get_serialized_questioner, check_user_org
 
 
 @check_user_org
 @login_required
 def questionnaire_list(request):
+
+    questionnaire_ids = Share.objects.filter(
+        target_content_type__model="questionnaire",
+        sharer_content_type__model="organisation",
+        sharer_object_id=request.user.organisation.id
+    ).values_list("target_object_id", flat=True)
     context = {
-        "questionnaires": Questionnaire.objects.filter(is_published=True),
+        "questionnaires": Questionnaire.objects.filter(
+            is_published=True,
+            id__in=questionnaire_ids,
+            start__lte=timezone.now(),
+            close__gte=timezone.now()
+        ),
     }
     return render(request, 'questionnaire/list.html', context)
-
 
 
 class QuestionnaireDetail(TemplateView):
@@ -30,8 +42,21 @@ class QuestionnaireDetail(TemplateView):
 
     @method_decorator(login_required)
     @method_decorator(check_user_org)
-    def dispatch(self, *args, **kwargs):
-        return super(ThankYouView, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        questionnaire = get_object_or_404(Questionnaire, pk=kwargs["pk"])
+        share = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            sharer_object_id=request.user.organisation.id,
+            target_object_id=questionnaire.id
+        ).first()
+        if (
+            not share or questionnaire.start > timezone.now() or
+            questionnaire.close < timezone.now() or not questionnaire.is_published
+        ):
+            return redirect("questionnaire-list")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
