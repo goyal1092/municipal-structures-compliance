@@ -32,6 +32,10 @@ class Questionnaire(MSCBase):
     @property
     def question_count(self):
         return Question.objects.filter(section__questionnaire=self).count()
+    
+    @property
+    def question_response_percentage(self):
+        return (self.response_count / self.question_count) * 100
 
 
 class Section(MSCBase):

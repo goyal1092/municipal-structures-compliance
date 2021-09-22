@@ -17,8 +17,6 @@ from .models import Questionnaire
 from .utils import get_serialized_questioner, check_user_org
 
 
-#TODO: Restore check, it breaks for logged out users
-
 @login_required
 @check_user_org
 def questionnaire_list(request):
@@ -86,7 +84,8 @@ class QuestionnaireDetail(TemplateView):
         is_submitted = request.POST.get("submit_form", None) == "submit"
         context = {}
 
-        validation_errors = save_response(request, organisation, questionnaire, response)
+        validation_errors = save_response(
+            request, organisation, questionnaire, response)
         if is_submitted:
             form_save_type = "submission"
             submission_errors = submit_form(questionnaire, response)

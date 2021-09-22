@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "msc.response",
     "msc.organisation",
     "msc.authentication",
+    "django.contrib.humanize"
 ]
 
 AUTH_USER_MODEL = "authentication.User"

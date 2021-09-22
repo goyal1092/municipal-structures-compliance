@@ -218,9 +218,24 @@ img.is-aligned-center {
   margin-right: auto;
 }
 
+.px-1 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .py-3 {
-  padding-bottom: 3em;
-  padding-top: 3em;
+  padding-bottom: 3rem;
+  padding-top: 3rem;
+}
+
+.py-2 {
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+}
+
+.py-1 {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
 }
 
 .mt-5 {
@@ -290,4 +305,34 @@ img.is-aligned-center {
 
 .is-primary-tinted {
   color: #e57200;
+}
+
+.is-background-color-grey-dark {
+  background-color: #333!important;
+}
+
+.is-background-color-grey-light {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mdc-layout-grid__cell {
+  //outline: solid 1px red;
+}
+
+.mdc-layout-grid {
+  //outline: solid 1px green;
+  padding: 0;
+}
+
+.is-breakout-full-width {
+  margin-left: calc(-100vw / 2 + 500px / 2);
+  margin-right: calc(-100vw / 2 + 500px / 2);
+}
+
+.is-line-height-1-5 {
+  line-height: 1.5em;
+}
+
+.mdc-card {
+  box-shadow: 0 4px 0.5em 0 rgb(0 0 0 / 5%);
 }
