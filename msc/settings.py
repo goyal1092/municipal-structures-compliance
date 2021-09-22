@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import environ
+import os
 
 ROOT_DIR = environ.Path(__file__) - 2
 PROJ_DIR = ROOT_DIR.path("msc")
@@ -38,7 +39,6 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
-    "msc.forms.apps.FormsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,7 +46,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "django_json_widget",
+    "msc.questionnaire",
+    "msc.response",
+    "msc.organisation",
+    "msc.authentication",
 ]
+
+AUTH_USER_MODEL = "authentication.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -59,12 +66,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 ROOT_URLCONF = "msc.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["msc/templates"],
+        "DIRS": [
+            os.path.join(PROJECT_ROOT, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -98,6 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+AUTHENTICATION_BACKENDS = ('msc.authentication.backends.EmailBackend',)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -155,6 +167,76 @@ logging.config.dictConfig(
         },
     }
 )
+
+QUESTION_INPUT_TYPES = tuple([(d, d.capitalize()) for d in [
+    "dropdown",
+    "shorttext",
+    "longtext",
+    "checkbox",
+    "radio",
+    "number"
+]])
+
+DEFAULT_INPUT_OPTIONS = {
+    "dropdown": {
+        "choices": [],
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
+    },
+    "shorttext": {
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
+    },
+    "longtext": {
+        "validations": {},
+        "placeholder": "",
+        "response_type": "str"
+    },
+    "checkbox": {
+        "choices": [],
+        "validations": {},
+        "response_type": "list"
+    },
+    "radio": {
+        "choices": ["Yes", "No"],
+        "validations": {},
+        "response_type": "str"
+    },
+    "number": {
+        "validations": {},
+        "placeholder": "",
+        "response_type": "int"
+    }
+}
+
+QUESTION_BUILDER_VALIDATIONS = {
+    "choices": {
+        "fields": ["dropdown", "checkbox", "radio"],
+        "msg": "choices can not be empty",
+        "example": '{ "choices": ["test1", "test2"] }'
+    }
+}
+
+
+LOGIC_ACTION = (
+    ("make_required", "Make Required"),
+)
+
+LOGIC_WHEN = (
+    ("parent", "parent is answered"),
+    ("parent_value", "parent response is equal to"),
+)
+
+SHARER_RELATIONSHIP_TYPES = tuple([(d, d.capitalize()) for d in [
+    "creator",
+    "admin",
+    "viewer",
+]])
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", False)

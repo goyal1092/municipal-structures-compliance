@@ -1,0 +1,7 @@
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+<li>
+    <a href="{% url 'admin:questionnaire_section_add' %}?questionnaire={{original.pk}}" class="addlink">{% translate "Add Section" %}</a>
+</li>
+
+{% endblock %}

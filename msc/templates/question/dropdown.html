@@ -1,0 +1,5 @@
+<select class="form-control {% if question.response and question.sno in errors %}is-invalid{% endif %}" id="exampleFormControlSelect1" name="{{ question.sno }}">
+	{% for choice in question.obj.options.choices %}
+      <option value="{{ choice }}" {% if question.response.value == choice %}selected{% endif %}>{{ choice }}</option>
+    {% endfor %}
+</select>

@@ -1,0 +1,10 @@
+{% for choice in question.obj.options.choices %}
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" id="inlineCheckbox1" value="{{choice}}" name="{{ question.sno }}" {% if question.response.value == choice %} checked {% endif %}>
+  <label class="form-check-label" for="inlineCheckbox1">{{choice}}</label>
+</div>
+{% endfor %}
+
+{% if not question.response.obj.is_valid and question.response.msg %}
+  <p class="text-danger">{{question.response.msg}}</p>
+{% endif %}

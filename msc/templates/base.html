@@ -16,6 +16,8 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Municipal Structures Compliance{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     {% block meta %}
     <meta property="description" content="{% block description %}Website for DCOG municipal form compliance.{% endblock %}" />
     <meta name="twitter:title" content="{% block twitter_title %}msc{% endblock %}">
@@ -25,7 +27,13 @@
     <meta property="og:description" content="{% block og_description %}Website for DCOG municipal form compliance.{% endblock %}" />
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static "scss/msc.css" %}">
+    <!-- Material Design -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" >
+    <!-- End Material Design -->
+    
+    <link rel="stylesheet" href="{% static 'css/msc.css' %}">
   </head>
   <body>
     {% if TAG_MANAGER_ENABLED %} 
@@ -33,10 +41,9 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ TAG_MANAGER_CONTAINER_ID }}"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    {% endif %} 
-
-    {% block content %}{% endblock %}
-
+    {% endif %}
+    {% block layout %}{% endblock layout %}
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <script src="{% static "js/msc.js" %}" async></script>
   </body>
 </html>

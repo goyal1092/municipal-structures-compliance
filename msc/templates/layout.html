@@ -1,0 +1,79 @@
+{% extends "base.html" %} {% block layout %}
+<header id="app-bar" class="mdc-top-app-bar">
+  <div class="mdc-top-app-bar__row is-contained">
+    <section
+      class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
+    >
+      <span class="mdc-top-app-bar__title">
+        <a href="/">
+          <img
+            class="logo"
+            src="/static/images/logo.png"
+            alt="Cooperative Governance Logo"
+          />
+        </a>
+      </span>
+    </section>
+    <section
+      class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
+      role="toolbar"
+    >
+      {% if request.user.is_authenticated %}
+      <div class="is-text-align-right">
+        <div class="user-text">
+          <div>
+            <span class="is-bold"> {{ request.user }} </span>
+            <span class="is-tag"> Contributor </span>
+          </div>
+          <div class="is-text-color-light-grey">
+            {{ request.user.organisation }}
+            ({{ request.user.organisation.org_type }})
+          </div>
+        </div>
+        <div class="user-avatar-text">{{ request.user.initials }}</div>
+      </div>
+      <button
+        id="mdc-drawer-opener"
+        class="
+          material-icons
+          mdc-top-app-bar__navigation-icon
+          mdc-icon-button mdc-drawer-opener
+        "
+        aria-label="Open navigation menu"
+      >
+        menu
+      </button>
+      {% endif %}
+    </section>
+  </div>
+</header>
+
+<aside class="mdc-drawer mdc-drawer--modal open">
+  <div class="mdc-drawer__content mdc-top-app-bar--fixed-adjust">
+    <nav class="mdc-list menu-list-bottom">
+      <a
+        class="mdc-list-item"
+        href="/accounts/logout"
+        aria-current="page"
+        tabindex="0"
+      >
+        <i class="material-icons mdc-list-item__graphic" aria-hidden="true"
+          >logout</i
+        >
+        <span class="mdc-list-item__text">Logout</span>
+      </a>
+    </nav>
+  </div>
+</aside>
+
+<div class="mdc-drawer-scrim"></div>
+
+<div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
+  <main id="main-content" class="main-content">
+    <div class="breadcrumb-wrapper">
+      <div class="is-contained">{% block breadcrumbs %}{% endblock %}</div>
+    </div>
+    <div class="is-contained">{% block content %}{% endblock %}</div>
+  </main>
+</div>
+{% endblock layout %}

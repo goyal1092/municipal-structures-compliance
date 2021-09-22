@@ -1,0 +1,1 @@
+<input type="number" class="form-control {% if question.response and question.sno in errors %}is-invalid{% endif %}" name="{{ question.sno }}" {% if question.response %} value="{{ question.response.value }}" {% endif %}>
