@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.exceptions import ValidationError
+from django.contrib.admin import widgets
 
 from .models import User
 
@@ -18,6 +19,11 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ('email', 'organisation', 'password1', 'password2', 'is_admin',)
 
+    def clean(self):
+        if self.cleaned_data['is_admin'] == True and self.cleaned_data['organisation'] is None:
+            raise ValidationError('Please select organisation to set user as admin of the organisation')
+        return self.cleaned_data
+
 
 class CustomUserChangeForm(UserChangeForm):
     """A form for updating users. Includes all the fields on
@@ -28,7 +34,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'organisation', 'is_active', 'is_admin', 'first_name', 'last_name')
+        fields = ('email', 'password', 'organisation', 'is_active', 'is_admin', 'first_name', 'last_name',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,3 +43,8 @@ class CustomUserChangeForm(UserChangeForm):
             if self.instance.organisation and not self.instance.organisation.parent:
                 is_admin = self.instance.is_national
             self.fields['is_admin'].initial = is_admin
+
+    def clean(self):
+        if self.cleaned_data['is_admin'] == True and self.cleaned_data['organisation'] is None:
+            raise ValidationError('Please select organisation to set user as admin of the organisation')
+        return self.cleaned_data

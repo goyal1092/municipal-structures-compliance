@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 class MSCBase(models.Model):
     created = models.DateTimeField(auto_now_add=True,
@@ -61,7 +62,7 @@ class Question(MSCBase):
     order = models.PositiveIntegerField(default=0, blank=False, null=False)
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True)
-    is_mandatory = models.BooleanField(default=True)
+    is_mandatory = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['order']
@@ -69,11 +70,30 @@ class Question(MSCBase):
     def __str__(self):
         return f"{self.section.label} -> {self.name}"
 
+    def clean(self):
+        input_type = self.input_type
+        options = self.options
+        default = settings.DEFAULT_INPUT_OPTIONS.get(input_type, None)
+
+        if not input_type:
+            raise ValidationError( "input type not found" )
+
+        if "response_type" not in options:
+            options["response_type"] = default["response_type"]
+
+        if "validations" not in options:
+            options["validations"] = default["validations"]
+
+        for validation_type, validation in settings.QUESTION_BUILDER_VALIDATIONS.items():
+            if input_type in validation["fields"]:
+                if validation_type not in options:
+                    raise ValidationError( f"{validation_type} are required for {input_type} question type. Example: {validation['example']}")
+                elif options[validation_type] in [None, '', []]:
+                    raise ValidationError( f"{validation['msg']}.Example: {validation['example']}")
+
 
 class QuestionLogic(MSCBase):
     action = models.CharField(max_length=32, choices=settings.LOGIC_ACTION)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    target = models.ForeignKey(
-        Question, on_delete=models.CASCADE, related_name="target")
     when = models.CharField(max_length=32, choices=settings.LOGIC_WHEN)
     values = models.CharField(max_length=255, null=True, blank=True)

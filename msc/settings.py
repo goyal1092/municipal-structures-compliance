@@ -197,14 +197,12 @@ DEFAULT_INPUT_OPTIONS = {
     "checkbox": {
         "choices": [],
         "validations": {},
-        "placeholder": "",
         "response_type": "list"
     },
     "radio": {
         "choices": ["Yes", "No"],
         "validations": {},
-        "placeholder": "",
-        "response_type": "list"
+        "response_type": "str"
     },
     "number": {
         "validations": {},
@@ -213,17 +211,22 @@ DEFAULT_INPUT_OPTIONS = {
     }
 }
 
+QUESTION_BUILDER_VALIDATIONS = {
+    "choices": {
+        "fields": ["dropdown", "checkbox", "radio"],
+        "msg": "choices can not be empty",
+        "example": '{ "choices": ["test1", "test2"] }'
+    }
+}
+
+
 LOGIC_ACTION = (
     ("make_required", "Make Required"),
-    ("show", "Show"),
-    ("hide", "Hide")
 )
 
 LOGIC_WHEN = (
-    ("answered", "target is answered"),
     ("parent", "parent is answered"),
     ("parent_value", "parent response is equal to"),
-    ("target_value", "target response is equal to"),
 )
 
 SHARER_RELATIONSHIP_TYPES = tuple([(d, d.capitalize()) for d in [

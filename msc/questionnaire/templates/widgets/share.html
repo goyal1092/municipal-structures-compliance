@@ -1,10 +1,13 @@
-
+<style type="text/css">
+    .field-shares>div>label{
+        display: none;
+    }
+</style>
 
 {% if current_user.is_superuser %}
-    
-    <div class="checkbox-row">
-    </br>
-        <label for="">Creator:</label>
+
+    <div class="checkbox-row" style="padding-left: 10px;">
+        <label for="" style="width: 60px;">Creator:</label>
             <select name="creator" required="" id="id_creator">
                 {% for org in organisations %}
                     <option value="{{ org.id }}" {% if org == selected_org %}selected="selected"{% endif %}>{{ org.name }}</option>
@@ -15,7 +18,7 @@
     <div class="form-row field-is_published">
         {% for org_type in organisation_types %}
             <div class="checkbox-row">
-                <input type="checkbox" name="shares" value="{{org_type.org_type__id}}" id="id_share_with" {% if org_type.count == org_type.shared_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with">
+                <input type="checkbox" name="shares" value="{{org_type.org_type__id}}" id="id_share_with_{{ org_type }}" {% if org_type.count == org_type.shared_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with_{{ org_type }}">
                     {% if org_type.shared_with == 0 %}
                         Share with {{ org_type.count }} {{ org_type.org_type__name }} organisation
                     {% elif org_type.count == org_type.shared_with %}
@@ -36,7 +39,7 @@
     <div class="form-row field-is_published">
         {% for org in organisations %}
             <div class="checkbox-row">
-                <input type="checkbox" name="shares" id="id_share_with" value="{{ org.id }}" {% if org in has_shares_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with">
+                <input type="checkbox" name="shares" id="id_share_with_{{ org.id }}" value="{{ org.id }}" {% if org in has_shares_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with_{{ org.id }}">
                     {{ org.name }}
                 </label>
             </div>
@@ -48,7 +51,7 @@
 {% if current_user.is_admin %}
     {% for org_type in organisation_types %}
         <div class="checkbox-row">
-            <input type="checkbox" name="shares" id="id_share_with" {% if org_type.count == org_type.shared_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with">
+            <input type="checkbox" name="shares" id="id_share_with_{{ org_type }}" value="{{org_type.org_type__id}}" {% if org_type.count == org_type.shared_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with_{{ org_type }}">
                 {% if org_type.shared_with == 0 %}
                     Share with {{ org_type.count }} {{ org_type.org_type__name }} organisation
                 {% elif org_type.count == org_type.shared_with %}

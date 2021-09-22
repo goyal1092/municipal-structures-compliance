@@ -18,7 +18,7 @@ class QuestionnaireForm(forms.ModelForm):
         model = Questionnaire
         fields = '__all__'
 
-    shares = forms.CharField(required=False)
+    shares = forms.CharField(required=False, label="")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,12 +33,23 @@ class QuestionnaireForm(forms.ModelForm):
 
 @admin.register(Questionnaire)
 class QuestionnaireAdmin(admin.ModelAdmin):
-    list_display = ("name", "start", "close")
-    fields = ('name', 'start', 'close', 'is_published', 'configuration', 'shares',)
+    list_display = ("name", "start", "close", "is_published",)
+    list_filter = ('is_published',)
+
+    fieldsets = (
+        (None, {'fields': ('name',)}),
+        ("Configurations", {'fields': (('start', 'close',), "is_published",)}),
+        ('Shares', {'fields': ('shares',)}),
+    )
     form = QuestionnaireForm
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and request.user.is_admin:
+            return self.readonly_fields + ('name', 'start', 'close', 'is_published',)
+        return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -73,15 +84,15 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 
         shares = [int(idx) for idx in request.POST.getlist("shares", [])]
         shared_with = Share.objects.filter(
-                target_content_type=ques_type,
-                target_object_id=obj.id,
-                sharer_content_type=org_type,
-            )
+            target_content_type=ques_type,
+            target_object_id=obj.id,
+            sharer_content_type=org_type,
+        )
 
         if shared_with:
             shared_with = [share.sharer.id for share in shared_with]
 
-        if request.user.is_superuser:
+        if not request.user.is_national:
             organisations = Organisation.objects.filter(
                 org_type_id__in=shares
             ).exclude(
@@ -98,7 +109,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                     relationship="viewer"
                 )
 
-        elif request.user.is_national:
+        else:
             organisations = Organisation.objects.filter(
                 id__in=shares
             ).exclude(
@@ -145,12 +156,11 @@ class QuestionLogicInline(admin.StackedInline):
 @admin.register(Question)
 class Question(admin.ModelAdmin):
     model = Question
-    fields = (
-        'section', 'input_type', 'name', 'text',
-        'instruction', 'parent', 'order', 'options',
-        'is_mandatory'
+    fieldsets = (
+        (None, {'fields': ('name', 'text', 'instruction', 'section',)}),
+        ("Configurations", {'fields': ('input_type', 'order', 'is_mandatory', 'parent', 'options',)}),
     )
-    list_filter = ['section__label', 'input_type']
+    list_filter = ['section__label', 'input_type', 'section__questionnaire__name']
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
@@ -225,7 +235,7 @@ class SectionAdmin(admin.ModelAdmin):
         def get_link(obj):
             display_name = f"{obj.name} -> {obj.input_type}"
             url = reverse("admin:questionnaire_question_change", args=[obj.id])
-            return f"<a href='{url}'>{display_name}</a>"
+            return f"<a href='{url}'>{display_name}</a></br>"
 
         if instance.id:
             questions = instance.question_set.all()

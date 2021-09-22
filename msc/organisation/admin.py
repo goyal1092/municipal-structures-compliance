@@ -6,13 +6,9 @@ from django_json_widget.widgets import JSONEditorWidget
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
-    }
+    list_display = ('name', 'org_type',)
+    list_filter = ('org_type',)
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
-    }
-    
+    pass
