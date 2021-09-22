@@ -18,8 +18,9 @@ from .utils import get_serialized_questioner, check_user_org
 
 
 #TODO: Restore check, it breaks for logged out users
-# @check_user_org
+
 @login_required
+@check_user_org
 def questionnaire_list(request):
 
     questionnaire_ids = Share.objects.filter(
