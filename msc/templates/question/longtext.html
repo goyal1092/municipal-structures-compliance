@@ -1,4 +1,12 @@
-<textarea class="form-control" id="exampleFormControlTextarea1" rows="4" name="{{ question.sno }}">{% if question.response %}{{ question.response.obj.value }} {% endif %}</textarea>
+<label class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--no-label">
+  <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+  <span class="mdc-text-field__resizer">
+    <textarea class="mdc-text-field__input" id="exampleFormControlTextarea1" rows="4" name="{{ question.sno }}">{% if question.response %}{{ question.response.obj.value }} {% endif %}</textarea>
+  </span>
+</label>
 {% if not question.response.obj.is_valid and question.response.msg %}
   <p class="text-danger">{{question.response.msg}}</p>
 {% endif %}

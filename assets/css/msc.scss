@@ -165,6 +165,14 @@ h1 {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05)
 }
 
+.mdc-typography--headline3 {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05)
+}
+
+
 .mdc-drawer-opener {
   border-left: 1px solid rgba(0, 0, 0, 0.05);
   margin-left: 0.75em;
@@ -201,7 +209,6 @@ h1 {
 
 .mdc-text-field--fullwidth {
   width: 100%;
-  background-color: red;
 }
 
 .mdc-form-field--wrapper {
@@ -238,8 +245,22 @@ img.is-aligned-center {
   padding-top: 1rem;
 }
 
+.my-3 {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.my-2 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .mt-5 {
   margin-top: 5em;
+}
+
+.mt-4 {
+  margin-top: 4rem;
 }
 
 .mb-5 {
@@ -335,4 +356,50 @@ img.is-aligned-center {
 
 .mdc-card {
   box-shadow: 0 4px 0.5em 0 rgb(0 0 0 / 5%);
+}
+
+.is-section-header {
+  background-color: #e57200;
+  color: #fff;
+  font-size: 1.6em;
+  font-weight: 700;
+  padding: 0 0.8em;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.is-size-1-5 {
+  font-size: 1.5em;
+}
+
+.is-size-1-4 {
+  font-size: 1.4em;
+}
+
+.is-size-0-5 {
+  font-size: 0.5em;
+}
+
+.is-size-0-75 {
+  font-size: 0.75em;
+}
+
+.is-pulled-right {
+  float: right;
+}
+
+.is-vertical-align-middle {
+  vertical-align: middle;
+}
+
+.mr-1 {
+  margin-right: 1rem;
+}
+
+.mr-0-5 {
+  margin-right: 0.5rem;
+}
+
+.mr-0-25 {
+  margin-right: 0.25rem;
 }
