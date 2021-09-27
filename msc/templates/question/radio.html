@@ -1,8 +1,15 @@
 {% for choice in question.obj.options.choices %}
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="radio" id="inlineCheckbox1" value="{{choice}}" name="{{ question.sno }}" {% if question.response.value == choice %} checked {% endif %}>
-  <label class="form-check-label" for="inlineCheckbox1">{{choice}}</label>
-</div>
+  <div class="mdc-form-field">
+    <div class="mdc-radio">
+      <input class="mdc-radio__native-control" type="radio" id="radio-{{question.id}}-{{forloop.counter}}" name="{{ question.sno }}" value="{{choice}}" {% if question.response.value == choice %} checked {% endif %}>
+      <div class="mdc-radio__background">
+        <div class="mdc-radio__outer-circle"></div>
+        <div class="mdc-radio__inner-circle"></div>
+      </div>
+      <div class="mdc-radio__ripple"></div>
+    </div>
+    <label for="radio-{{question.id}}-{{forloop.counter}}">{{choice}}</label>
+  </div>
 {% endfor %}
 
 {% if not question.response.obj.is_valid and question.response.msg %}
