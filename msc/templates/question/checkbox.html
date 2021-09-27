@@ -1,6 +1,22 @@
 {% for choice in question.obj.options.choices %}
-<div class="form-check form-check-inline">
-  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="{{choice}}" name="{{ question.sno }}" {% if choice in question.response.value %} checked=checked {% endif %}>
-  <label class="form-check-label" for="inlineCheckbox1">{{choice}}</label>
+<div class="mdc-form-field">
+  <div class="mdc-checkbox">
+    <input type="checkbox"
+           class="mdc-checkbox__native-control"
+           id="checkbox-{{question.id}}-{{forloop.counter}}"
+           name="{{ question.sno }}" 
+           {% if 'on' in question.response.value %} checked=checked {% endif %} />
+    <div class="mdc-checkbox__background">
+      <svg class="mdc-checkbox__checkmark"
+           viewBox="0 0 24 24">
+        <path class="mdc-checkbox__checkmark-path"
+              fill="none"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+      </svg>
+      <div class="mdc-checkbox__mixedmark"></div>
+    </div>
+    <div class="mdc-checkbox__ripple"></div>
+  </div>
+  <label for="checkbox-{{question.id}}-{{forloop.counter}}">{{choice}}</label>
 </div>
 {% endfor %}
