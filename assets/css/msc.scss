@@ -421,3 +421,7 @@ img.is-aligned-center {
     border-color: #000 !important;
   }
 }
+
+.mdc-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background {
+  background-color: #0174ff!important;
+}
