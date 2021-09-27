@@ -1,1 +1,20 @@
-<input type="number" class="form-control {% if question.response and question.sno in errors %}is-invalid{% endif %}" name="{{ question.sno }}" {% if question.response %} value="{{ question.response.value }}" {% endif %}>
+<label
+  class="
+    mdc-text-field
+    mdc-text-field--outlined
+    mdc-text-field--fullwidth
+    mdc-text-field--no-label
+  "
+>
+  <span class="mdc-notched-outline">
+    <span class="mdc-notched-outline__leading"></span>
+    <span class="mdc-notched-outline__trailing"></span>
+  </span>
+  <input
+    class="mdc-text-field__input"
+    type="number"
+    aria-label="Label"
+    name="{{ question.sno }}"
+    value="{% if question.response %}{{question.response.value}} {% endif %}"
+  />
+</label>
