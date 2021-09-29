@@ -3,7 +3,7 @@ from django.urls import include, path
 
 from django.contrib.auth import views as auth_views
 from .questionnaire.views import questionnaire_list, questionnaire_list_submitted, QuestionnaireDetail
-from .organisation.views import login
+from .organisation.views import login, send_reminder
 from .response.views import save_response
 
 urlpatterns = [
@@ -16,5 +16,7 @@ urlpatterns = [
     path("forms/<int:pk>/", QuestionnaireDetail.as_view(), name="questionnaire-detail"),
     path('ckeditor', include('ckeditor_uploader.urls')),
     # path("save-response/", save_response, name="save-response"),
+
+    path("send_reminder/", send_reminder, name="send_reminder"),
 ]
 
