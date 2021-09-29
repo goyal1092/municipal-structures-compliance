@@ -1,0 +1,17 @@
+{% autoescape off %}
+
+Hello {{ obj.username }},
+
+Welcome to DCOG Online Monitoring tool.
+
+To Account details are:
+
+Email : {{obj.email}}
+Password : {{ password }}
+
+you can change your password from here: {{base_url}}{{link}}
+Please copy and paste the link it into a browser window.
+
+This email was sent on behalf of {{ sender.email }} from {{ sender.organisation.email }}, who has invited you to DCOG Online Monitoring tool to take questionnaires for {{ obj.organisation.name }}. If you believe you’ve received this email by mistake, please let us know.
+
+{% endautoescape %}

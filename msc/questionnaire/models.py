@@ -1,17 +1,14 @@
+from string import Template
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from ckeditor.fields import RichTextField
 
-class MSCBase(models.Model):
-    created = models.DateTimeField(auto_now_add=True,
-                                   help_text="Date and time this object was created.")
-    modified = models.DateTimeField(auto_now=True,
-                                    help_text="Date and time this object was last modified.")
+from .base import MSCBase
 
-    class Meta:
-        abstract = True
+from msc.authentication.utils import get_sharers
+from msc.organisation.models import Organisation
 
 
 class Questionnaire(MSCBase):
@@ -51,6 +48,45 @@ class Questionnaire(MSCBase):
             organisation=organisation,
             is_submitted=True
         ).exists()
+
+    def get_reminder_options(self, user):
+        children = list(set(user.organisation.get_children(False).values_list(
+            "org_type__name", flat=True
+        )))
+        is_user_admin = user.is_admin or user.is_national
+        options = []
+
+        organisation_ids = get_sharers(self)
+        all_organisations = Organisation.objects.filter(
+            id__in=organisation_ids, org_type__name__in=children
+        )
+        submitted_organisation_ids = self.response_set.filter(
+            is_submitted=True,
+            organisation__in=all_organisations
+        ).values_list("organisation_id", flat=True)
+
+        submitted_organisations = all_organisations.filter(id__in=submitted_organisation_ids)
+        unsubmitted_organistions = all_organisations.exclude(id__in=submitted_organisation_ids)
+
+        for child in children:
+            org_type = child.lower()
+            for text in settings.EMAIL_ORG_USER_FILTER:
+
+                filtered_organisation = all_organisations
+                if "unsubmitted" in text[0]:
+                    filtered_organisation = unsubmitted_organistions.filter(org_type__name=child)
+                elif "submitted" in text[0]:
+                    filtered_organisation = submitted_organisations.filter(org_type__name=child)
+
+                key = Template(text[0]).substitute({'org_type': org_type})
+                count = filtered_organisation.count()
+                options.append({
+                    "name": key,
+                    "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
+                    "organisations": filtered_organisation,
+                    "count": count,
+                })
+        return options
 
 
 class Section(MSCBase):

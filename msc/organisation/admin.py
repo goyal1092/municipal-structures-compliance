@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Organisation, Group
+from .models import Organisation, Group, EmailActivity
 from django.db import models
 from django_json_widget.widgets import JSONEditorWidget
 
@@ -11,4 +11,8 @@ class OrganisationAdmin(admin.ModelAdmin):
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(EmailActivity)
+class EmailActivityAdmin(admin.ModelAdmin):
     pass

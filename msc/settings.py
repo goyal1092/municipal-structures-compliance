@@ -236,9 +236,28 @@ SHARER_RELATIONSHIP_TYPES = tuple([(d, d.capitalize()) for d in [
     "viewer",
 ]])
 
+EMAIL_ACTIVITY_TYPE = (
+    ("reminder", "Reminder"),
+    ("account_activation", "Account Activation"),
+    ("reset_password", "Reset Password"),
+    ("change_password", "Change Password")
+)
+
+EMAIL_ORG_USER_FILTER = (
+    ("all_$org_type", "Send to all $org_type ($count)"),
+    ("submitted_$org_type", "Send to submitted $org_type ($count)"),
+    ("unsubmitted_$org_type", "Send to unsubmitted $org_type ($count)")
+)
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+
+# Localhost
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+
+FROM_EMAIL_ADDRESS = "no-reply.openup.org.za"
 
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", False)
 if TAG_MANAGER_ENABLED:

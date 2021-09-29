@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from msc.questionnaire.models import MSCBase
+from msc.questionnaire.base import MSCBase
 from .utils import ValidateQuestionResponse
 
 
