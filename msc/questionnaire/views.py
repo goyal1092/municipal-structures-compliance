@@ -45,9 +45,7 @@ def questionnaire_list_submitted(request):
     context = {
         "questionnaires": Questionnaire.objects.filter(
             is_published=True,
-            id__in=questionnaire_ids,
-            start__lte=timezone.now(),
-            close__gte=timezone.now()
+            id__in=questionnaire_ids
         ),
     }
     return render(request, 'questionnaire/list-submitted.html', context)

@@ -26,6 +26,7 @@
     </thead>
     <tbody
       {% for questionnaire in questionnaires %}
+      {% if questionnaire.is_submitted %}
       <tr>
         <td>
           <a href="{% url 'questionnaire-detail' questionnaire.id %}">
@@ -39,6 +40,7 @@
           <span class="is-tag is-light">Submitted</span>
         </td>
       </tr>
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>

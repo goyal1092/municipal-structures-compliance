@@ -42,6 +42,10 @@ class Questionnaire(MSCBase):
     def overdue(self):
         return self.close < timezone.now()
 
+    @property
+    def is_submitted(self):
+        return self.response_set.filter(is_submitted=True).exists()
+
 
 class Section(MSCBase):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
