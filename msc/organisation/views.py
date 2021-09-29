@@ -13,7 +13,7 @@ def login(request):
                 messages.error(request, 'User Does not belong to any organisation')
             if user.is_active and user.organisation:
                 auth_login(request, user)
-                return redirect('questionnaire-list')
+                return redirect('forms-active')
         else:
             messages.error(request, 'Invalid credentials')
     return render(request, 'registration/login.html')

@@ -192,6 +192,10 @@ h1 {
 }
 
 .mdc-drawer__content {
+  .mdc-list-item {
+    margin-bottom: 1em;
+  }
+
   .mdc-list-item__text {
     margin-left: 0.75em;
   }
@@ -262,7 +266,11 @@ img.is-aligned-center {
 }
 
 .mt-5 {
-  margin-top: 5em;
+  margin-top: 5rem;
+}
+
+.mt-1 {
+  margin-top: 1rem;
 }
 
 .mt-4 {
