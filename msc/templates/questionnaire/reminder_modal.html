@@ -1,0 +1,48 @@
+{% load custom_tags %}
+<div class="mdc-dialog mdc-dialog--reminder">
+    <div class="mdc-dialog__container">
+      <div class="mdc-dialog__surface"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="my-dialog-title"
+        aria-describedby="my-dialog-content">
+        <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+        <div class="mdc-dialog__header">
+        <h3 class="mdc-dialog__title">
+          Send reminder
+        </h3>
+        <button class="mdc-icon-button material-icons mdc-dialog__close"
+                data-mdc-dialog-action="close">
+          close
+        </button>
+      </div>
+        <form method="POST" class="reminder_form" action="{% url 'send_reminder' %}">
+          {% csrf_token %}
+          <div class="mdc-dialog__content">
+              <input type="hidden" name="questionnaire_id" value="{{ questionnaire.id }}">
+            <label>
+              Send reminder to:
+              <select class="dropdown-fullwidth form-control" id="exampleFormControlSelect1" name="selected_option" required="required">
+                {% for val in questionnaire|reminder_options:request.user %}
+                  <option value="{{ val.name }}"  {% if val.count == 0 %} disabled="disabled" {% endif %}>{{ val.text }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--outlined mdc-text-field--textarea ">
+              Send a message with reminder:
+              <span class="mdc-text-field__resizer textarea">
+                <textarea class="mdc-text-field__input" id="exampleFormControlTextarea1" rows="3" name="msg" placeholder="Enter your message here..."></textarea>
+              </span>
+            </label>
+          </div>
+          <div class="mdc-dialog__actions">
+            <button type="submit" class="mdc-button mdc-dialog__button">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Send reminder</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+  </div>

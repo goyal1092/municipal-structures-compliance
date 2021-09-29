@@ -42,6 +42,10 @@ body {
   width: 140px;
 }
 
+.error-txt{
+  color: #b00020;
+}
+
 .breadcrumb-wrapper {
   background-color: #e57200;
   padding-bottom: 19px;
@@ -504,4 +508,84 @@ img.is-aligned-center {
 
 .is-zindex-7 {
   z-index: 7!important;
+}
+
+
+.mdc-dialog--reminder {
+
+  .mdc-dialog__surface{
+    padding: 0 1.2em;
+    min-width: 37em;
+  }
+  
+  .mdc-dialog__header {
+    border-bottom: 1px solid transparent;
+    display: inline-flex;
+    justify-content: space-between;
+    z-index: 1;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+  }
+
+  .mdc-dialog__title {
+    margin-bottom: 0;
+    padding: 0;
+    border-bottom: 0;
+    font-size: 1.2em;
+  }
+
+  .mdc-dialog__surface .mdc-dialog__close {
+    right: -12px;
+    top: 7px;
+  }
+
+  .mdc-dialog__content{
+
+    padding: 0px;
+
+    label{
+      display: block;
+      margin-bottom: 0.4em;
+      line-height: 1;
+      font-weight: 500;
+      color: black;
+      font-size: 0.9em;
+    }
+
+    label .textarea, label select{
+      display: block;
+      background-color: rgba(0, 0, 0, 0.05);
+      border: None;
+      color: black;
+      font-size: 0.9em;
+      font-weight: 500;
+      margin-bottom: 1em;
+      margin-top: 0.5em;
+    }
+  }
+
+  .mdc-dialog__actions{
+    margin-top: 0.5em;
+    padding-top: 1.5em;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    button{
+      width: 100%;
+      text-align: center;
+      height: 3em;
+      margin-bottom: 1em;
+      padding-right: 0.8em;
+      padding-left: 0.8em;
+      align-items: center;
+      border-radius: 4px;
+      background-color: #e57200;
+      color: white;
+      text-transform: none;
+    }
+  }
+}
+
+.mdc-change-passowrd-form{
+  padding: 4em;
 }

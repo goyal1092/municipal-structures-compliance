@@ -1,4 +1,4 @@
-{% extends "layout.html" %} {% block breadcrumbs %}
+{% extends "layout.html" %} {% load custom_tags %} {% block breadcrumbs %}
 <a href="{% url 'root' %}">Compliance forms</a>
 <a href="{% url 'forms-active' %}">Active</a>
 {% endblock %} {% block content %}
@@ -44,10 +44,22 @@
           <span class="is-tag is-success">Ready to submit</span>
           {% endif %}
         </td>
+        <td class="has-nowrap">
+          <button class="mdc-button send_message">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">notifications</i>
+          </button>
+          {% include 'questionnaire/reminder_modal.html' %}
+          
+        </td>
       </tr>
       {% endif %}
       {% endfor %}
     </tbody>
   </table>
+
+
+
 </main>
+
+
 {% endblock %}
