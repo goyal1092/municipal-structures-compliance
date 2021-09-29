@@ -30,8 +30,7 @@ def questionnaire_list(request):
         "questionnaires": Questionnaire.objects.filter(
             is_published=True,
             id__in=questionnaire_ids,
-            start__lte=timezone.now(),
-            close__gte=timezone.now()
+            start__lte=timezone.now()
         ),
     }
     return render(request, 'questionnaire/list.html', context)
@@ -67,8 +66,7 @@ class QuestionnaireDetail(TemplateView):
             target_object_id=questionnaire.id
         ).first()
         if (
-            not share or questionnaire.start > timezone.now() or
-            questionnaire.close < timezone.now() or not questionnaire.is_published
+            not share or questionnaire.start > timezone.now() or not questionnaire.is_published
         ):
             return redirect("forms-active")
 

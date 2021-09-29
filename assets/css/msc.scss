@@ -93,6 +93,16 @@ body {
     color: #000;
     background-color: rgba(0, 0, 0, 0.1);
   }
+
+  &.is-success {
+    color: #000;
+    background-color: #b9f18d;
+  }
+
+  &.is-danger {
+    color: #000;
+    background-color: #ff7575;
+  }
 }
 
 .is-text-align-right {

@@ -34,10 +34,13 @@
         </td>
         <td class="has-nowrap">
           {{ questionnaire.close |date:'d/m/Y' }}
-          <span class="is-tag is-light">{{questionnaire.close | timeuntil}} left</span>
+          <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
         </td>
         <td class="has-nowrap">
           {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
+          {% if questionnaire.response_count == questionnaire.question_count %}
+          <span class="is-tag is-success">Ready to submit</span>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
