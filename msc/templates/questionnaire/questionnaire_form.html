@@ -2,7 +2,7 @@
 {% load custom_tags %}
 {% load humanize %}
 {% block breadcrumbs %}
-<a href="/">Compliance forms</a>
+<a href="{% url 'root' %}">Compliance forms</a>
 <a href="{% url 'questionnaire-detail' questionnaire.id %}">
   {{ questionnaire.name }}
 </a>
@@ -22,7 +22,7 @@
   <nav class="mdc-layout-grid">
     <div class="mdc-layout-grid__inner">
       <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-        <h1 class="mdc-typography--headline1">
+        <h1 title="{{ questionnaire.name }}" class="mdc-typography--headline1 has-nowrap has-overflow-ellipsis">
           <i class="material-icons mdc-button__icon is-primary-tinted" aria-hidden="true">list_alt</i>
           {{ questionnaire.name }}
         </h1>
@@ -58,7 +58,13 @@
               <div>
                 <span class="is-bold">Questions answered:</span>
                 <br />
-                {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                <span class="is-bar-background">
+                  <span class="is-bar" style="width: {{ questionnaire.question_response_percentage | floatformat:0 }}%;">
+                    <span class="is-bar-text has-nowrap">
+                      {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                    </span>
+                  </span>
+                </span>
               </div>
             </div>
           </div>
@@ -68,7 +74,7 @@
                 <span class="is-bold">Submission deadline:</span>
                 <br />
                 <span>{{ questionnaire.close | date:'d/m/Y' }}</span>
-                <span class="is-tag is-light">{{questionnaire.close | timeuntil | split_timeuntil}} left</span>
+                <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince | split_timeuntil}}{%else%}{{questionnaire.close | timeuntil | split_timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
             </div>
             </div>
           </div>
@@ -77,8 +83,8 @@
               <div>
                 <span class="is-bold">Date received:</span>
                 <br />
-                <span>{{ questionnaire.close |date:'d/m/Y' }}</span>
-                <span class="is-tag is-light">{{questionnaire.close | timeuntil | split_timeuntil}} ago</span>
+                <span>{{ questionnaire.start |date:'d/m/Y' }}</span>
+                <span class="is-tag is-light">{{questionnaire.start | timesince | split_timeuntil}} ago</span>
               </div>
             </div>
           </div>

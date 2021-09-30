@@ -30,12 +30,25 @@ def questionnaire_list(request):
         "questionnaires": Questionnaire.objects.filter(
             is_published=True,
             id__in=questionnaire_ids,
-            start__lte=timezone.now(),
-            close__gte=timezone.now()
+            start__lte=timezone.now()
         ),
     }
     return render(request, 'questionnaire/list.html', context)
 
+def questionnaire_list_submitted(request):
+
+    questionnaire_ids = Share.objects.filter(
+        target_content_type__model="questionnaire",
+        sharer_content_type__model="organisation",
+        sharer_object_id=request.user.organisation.id
+    ).values_list("target_object_id", flat=True)
+    context = {
+        "questionnaires": Questionnaire.objects.filter(
+            is_published=True,
+            id__in=questionnaire_ids
+        ),
+    }
+    return render(request, 'questionnaire/list-submitted.html', context)
 
 class QuestionnaireDetail(TemplateView):
     template_name = 'questionnaire/questionnaire_form.html'
@@ -51,10 +64,9 @@ class QuestionnaireDetail(TemplateView):
             target_object_id=questionnaire.id
         ).first()
         if (
-            not share or questionnaire.start > timezone.now() or
-            questionnaire.close < timezone.now() or not questionnaire.is_published
+            not share or questionnaire.start > timezone.now() or not questionnaire.is_published
         ):
-            return redirect("questionnaire-list")
+            return redirect("forms-active")
 
         return super().dispatch(request, *args, **kwargs)
 

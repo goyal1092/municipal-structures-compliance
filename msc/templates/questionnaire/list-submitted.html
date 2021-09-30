@@ -1,6 +1,6 @@
 {% extends "layout.html" %} {% block breadcrumbs %}
 <a href="{% url 'root' %}">Compliance forms</a>
-<a href="{% url 'forms-active' %}">Active</a>
+<a href="{% url 'forms-submitted' %}">Submitted</a>
 {% endblock %} {% block content %}
 <main class="questionnaires">
   <h1 class="mdc-typography--headline1">
@@ -8,7 +8,7 @@
     Compliance forms
   </h1>
   <h2 class="mdc-typography--headline2">
-      Active forms awaiting submission
+      Submitted forms
   </h2>
 
   <table class="is-table-app">
@@ -18,16 +18,17 @@
           Form name
         </th>
         <th class="has-nowrap" align="left">
-          Due date
+          Submitted by
         </th>
         <th class="has-nowrap" align="left">
-          Completion
+          Date submitted
         </th>
       </tr>
     </thead>
     <tbody
       {% for questionnaire in questionnaires %}
-      {% if not questionnaire.is_submitted %}
+      {% for response in questionnaire.response_set.all %}
+      {% if response.is_submitted %}
       <tr>
         <td>
           <a href="{% url 'questionnaire-detail' questionnaire.id %}">
@@ -35,17 +36,14 @@
           </a>
         </td>
         <td class="has-nowrap">
-          {{ questionnaire.close |date:'d/m/Y' }}
-          <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+          {{ response.organisation }}
         </td>
         <td class="has-nowrap">
-          {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
-          {% if questionnaire.response_count == questionnaire.question_count %}
-          <span class="is-tag is-success">Ready to submit</span>
-          {% endif %}
+          {{ response.created |date:'d/m/Y' }}
         </td>
       </tr>
       {% endif %}
+      {% endfor %}
       {% endfor %}
     </tbody>
   </table>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class MSCBase(models.Model):
     created = models.DateTimeField(auto_now_add=True,
@@ -36,6 +37,14 @@ class Questionnaire(MSCBase):
     @property
     def question_response_percentage(self):
         return (self.response_count / self.question_count) * 100
+    
+    @property
+    def overdue(self):
+        return self.close < timezone.now()
+
+    @property
+    def is_submitted(self):
+        return self.response_set.filter(is_submitted=True).exists()
 
 
 class Section(MSCBase):
