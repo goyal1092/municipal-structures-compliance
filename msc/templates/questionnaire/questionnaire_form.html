@@ -68,7 +68,7 @@
                 <span class="is-bold">Submission deadline:</span>
                 <br />
                 <span>{{ questionnaire.close | date:'d/m/Y' }}</span>
-                <span class="is-tag is-light">{{questionnaire.close | timeuntil | split_timeuntil}} left</span>
+                <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince | split_timeuntil}}{%else%}{{questionnaire.close | timeuntil | split_timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
             </div>
             </div>
           </div>
@@ -77,8 +77,8 @@
               <div>
                 <span class="is-bold">Date received:</span>
                 <br />
-                <span>{{ questionnaire.close |date:'d/m/Y' }}</span>
-                <span class="is-tag is-light">{{questionnaire.close | timeuntil | split_timeuntil}} ago</span>
+                <span>{{ questionnaire.start |date:'d/m/Y' }}</span>
+                <span class="is-tag is-light">{{questionnaire.start | timesince | split_timeuntil}} ago</span>
               </div>
             </div>
           </div>
