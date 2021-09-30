@@ -310,6 +310,11 @@ img.is-aligned-center {
   white-space: nowrap;
 }
 
+.has-overflow-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .is-table-app {
   border-spacing: 0 10px;
   thead {
