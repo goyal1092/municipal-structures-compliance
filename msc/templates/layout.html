@@ -5,7 +5,7 @@
       class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
     >
       <span class="mdc-top-app-bar__title">
-        <a href="/">
+        <a href="{% url 'root' %}">
           <img
             class="logo"
             src="/static/images/logo.png"
@@ -26,8 +26,8 @@
             <span class="is-tag"> Contributor </span>
           </div>
           <div class="is-text-color-light-grey">
-            {{ request.user.organisation }} ({{
-            request.user.organisation.org_type }})
+            {{ request.user.organisation }} 
+            ({{ request.user.organisation.org_type }})
           </div>
         </div>
         <div class="user-avatar-text">{{ request.user.initials }}</div>

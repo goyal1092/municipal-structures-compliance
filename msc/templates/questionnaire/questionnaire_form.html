@@ -2,7 +2,7 @@
 {% load custom_tags %}
 {% load humanize %}
 {% block breadcrumbs %}
-<a href="/">Compliance forms</a>
+<a href="{% url 'root' %}">Compliance forms</a>
 <a href="{% url 'questionnaire-detail' questionnaire.id %}">
   {{ questionnaire.name }}
 </a>
