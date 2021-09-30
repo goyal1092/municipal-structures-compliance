@@ -58,7 +58,13 @@
               <div>
                 <span class="is-bold">Questions answered:</span>
                 <br />
-                {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                <span class="is-bar-background">
+                  <span class="is-bar" style="width: {{ questionnaire.question_response_percentage | floatformat:0 }}%;">
+                    <span class="is-bar-text has-nowrap">
+                      {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                    </span>
+                  </span>
+                </span>
               </div>
             </div>
           </div>

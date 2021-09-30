@@ -438,22 +438,24 @@ img.is-aligned-center {
   border-radius: 0;
 }
 
-.mdc-radio__native-control:enabled+.mdc-radio__background {
+.mdc-radio__native-control:enabled + .mdc-radio__background {
   .mdc-radio__outer-circle,
   .mdc-radio__inner-circle {
     border-color: #0174ff !important;
   }
 }
 
-.mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background {
+.mdc-radio__native-control:enabled:not(:checked) + .mdc-radio__background {
   .mdc-radio__outer-circle,
   .mdc-radio__inner-circle {
     border-color: #000 !important;
   }
 }
 
-.mdc-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background {
-  background-color: #0174ff!important;
+.mdc-checkbox
+  .mdc-checkbox__native-control:checked
+  ~ .mdc-checkbox__background {
+  background-color: #0174ff !important;
 }
 
 .dropdown-fullwidth {
@@ -462,4 +464,23 @@ img.is-aligned-center {
   padding: 14px 10px;
   font-size: 16px;
   color: rgba(0, 0, 0, 0.87);
+}
+
+.is-bar-background {
+  width: 100%;
+  display: inline-block;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.05);
+
+  .is-bar {
+    display: inline-block;
+    width: 25%;
+    background-color: #b9f18d;
+    border-radius: 10px;
+    
+    .is-bar-text {
+      font-size: smaller;
+      padding: 0.5em;
+    }
+  }
 }
