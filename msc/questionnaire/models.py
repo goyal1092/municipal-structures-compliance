@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from ckeditor.fields import RichTextField
 
 class MSCBase(models.Model):
     created = models.DateTimeField(auto_now_add=True,
@@ -61,7 +62,9 @@ class Section(MSCBase):
 
 class Question(MSCBase):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    instruction = models.TextField(max_length=1024, blank=True, null=True)
+    #instruction = models.TextField(max_length=1024, blank=True, null=True)
+    instruction = RichTextField(blank=True, null=True, help_text="Add links, formatting etc. to help guide the question")
+
     input_type = models.CharField(
         max_length=32, choices=settings.QUESTION_INPUT_TYPES,
         db_index=True
