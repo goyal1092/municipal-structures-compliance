@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import logging.config
 import environ
 import os
 
@@ -51,7 +52,8 @@ INSTALLED_APPS = [
     "msc.response",
     "msc.organisation",
     "msc.authentication",
-    "django.contrib.humanize"
+    "django.contrib.humanize",
+    "ckeditor",
 ]
 
 AUTH_USER_MODEL = "authentication.User"
@@ -105,9 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 AUTHENTICATION_BACKENDS = ('msc.authentication.backends.EmailBackend',)
@@ -145,8 +147,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 WHITENOISE_AUTOREFRESH = env.bool("DJANGO_WHITENOISE_AUTOREFRESH", False)
 
 
-import logging.config
-
 LOGGING_CONFIG = None
 logging.config.dictConfig(
     {
@@ -160,11 +160,11 @@ logging.config.dictConfig(
             },
         },
         "handlers": {
-            "console": {"class": "logging.StreamHandler", "formatter": "console",},
+            "console": {"class": "logging.StreamHandler", "formatter": "console", },
         },
         "loggers": {
             # root logger
-            "": {"level": "INFO", "handlers": ["console"],},
+            "": {"level": "INFO", "handlers": ["console"], },
         },
     }
 )
@@ -243,3 +243,19 @@ LOGOUT_REDIRECT_URL = '/'
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", False)
 if TAG_MANAGER_ENABLED:
     TAG_MANAGER_CONTAINER_ID = env("TAG_MANAGER_CONTAINER_ID")
+
+####################################
+    ##  CKEDITOR CONFIGURATION ##
+####################################
+
+CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': None,
+    },
+}
+
+###################################

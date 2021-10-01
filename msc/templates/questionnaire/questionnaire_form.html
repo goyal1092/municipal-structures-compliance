@@ -140,7 +140,9 @@
             </h3>
             <div>
               <p class="is-size-1-4">{{ question.obj.text }}</p>
-              <p>{{ question.obj.instruction }}</p>
+              {% autoescape off %}
+                {{ question.obj.instruction }}
+              {% endautoescape %}
               {% include question.template %} {% if question.sno in errors %}
               <p class="text-danger">{{errors|keyvalue:question.sno}}</p>
               {% endif %} 
