@@ -7,9 +7,12 @@ ENV PYTHONUNBUFFERED 1
 ENV NODE_ENV production
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE DontWarn
 
+RUN apt-get -y update || apt-get install -y ca-certificates && apt-get update
+
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
 RUN set -ex; \
+  apt-get install -y ca-certificates; \
   apt-get update; \
   # dependencies for building Python packages \
   apt-get install -y build-essential python3.7-dev; \
