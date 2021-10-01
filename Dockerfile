@@ -1,4 +1,5 @@
-FROM openup/docker-python-nodejs:python3.7-nodejs12
+#FROM openup/docker-python-nodejs:python3.7-nodejs12
+FROM nikolaik/python-nodejs:python3.9-nodejs12
 
 ENV POETRY_VIRTUALENVS_CREATE false
 ENV PIP_NO_CACHE_DIR off
@@ -7,15 +8,13 @@ ENV PYTHONUNBUFFERED 1
 ENV NODE_ENV production
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE DontWarn
 
-RUN apt-get -y update || apt-get install -y ca-certificates && apt-get update
-
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
 RUN set -ex; \
   apt-get install -y ca-certificates; \
   apt-get update; \
   # dependencies for building Python packages \
-  apt-get install -y build-essential python3.7-dev; \
+  apt-get install -y build-essential python3-dev; \
   # psycopg2 dependencies \
   apt-get install -y libpq-dev; \
   # git for codecov file listing \
