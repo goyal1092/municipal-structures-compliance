@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block layout %}
-<header id="app-bar" class="mdc-top-app-bar">
+<header class="mdc-top-app-bar is-position-sticky">
   <div class="mdc-top-app-bar__row is-contained">
     <section
       class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
@@ -97,7 +97,7 @@
     <div class="breadcrumb-wrapper">
       <div class="is-contained">{% block breadcrumbs %}{% endblock %}</div>
     </div>
-    <div class="is-contained">{% block content %}{% endblock %}</div>
+    <div class="is-contained py-1">{% block content %}{% endblock %}</div>
   </main>
 </div>
 {% endblock layout %}
