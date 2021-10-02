@@ -13,6 +13,7 @@ body {
   padding-top: 3px;
   padding-bottom: 3px;
   box-shadow: 0 2px 14px 0 rgb(0 0 0 / 5%);
+  z-index: 1!important;
 
   .mdc-top-app-bar__navigation-icon {
     color: #000;
@@ -23,7 +24,7 @@ body {
 }
 
 .mdc-top-app-bar--fixed-adjust {
-  padding-top: 70px;
+  padding-top: 0px;
 }
 
 .is-contained {
@@ -134,12 +135,12 @@ body {
 
 .mdc-drawer-app-content {
   flex: auto;
-  overflow: auto;
+  //overflow: auto;
   position: relative;
 }
 
 .main-content {
-  overflow: auto;
+  //overflow: auto;
   height: 100%;
 }
 
@@ -166,6 +167,7 @@ h1 {
   font-size: 1.6em;
   font-weight: 500;
   margin: 0;
+  line-height: 64px;
 }
 
 .mdc-typography--headline2 {
@@ -483,4 +485,19 @@ img.is-aligned-center {
       padding: 0.5em;
     }
   }
+}
+
+.is-position-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.is-top-minus-20px {
+  top: -20px;
+}
+
+.has-background-white {
+  background-color: #fff;
 }
