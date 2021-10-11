@@ -20,11 +20,13 @@ if (opener) {
     if (drawer.open) {
       opener.innerText = "menu";
       drawer.open = false;
-      appBar.classList.remove('is-zindex-7');
+      setTimeout(function () {
+        appBar.classList.remove("is-zindex-7");
+      }, 1000);
     } else {
       opener.innerText = "close";
       drawer.open = true;
-      appBar.classList.add('is-zindex-7');
+      appBar.classList.add("is-zindex-7");
     }
   });
 }
