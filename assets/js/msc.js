@@ -12,6 +12,7 @@ if (document.querySelector(".mdc-button")) {
 }
 
 const opener = document.getElementById("mdc-drawer-opener");
+const appBar = document.getElementById("app-bar");
 if (opener) {
   const drawerEl = document.querySelector(".mdc-drawer");
   const drawer = new mdc.drawer.MDCDrawer.attachTo(drawerEl);
@@ -19,9 +20,13 @@ if (opener) {
     if (drawer.open) {
       opener.innerText = "menu";
       drawer.open = false;
+      setTimeout(function () {
+        appBar.classList.remove("is-zindex-7");
+      }, 1000);
     } else {
       opener.innerText = "close";
       drawer.open = true;
+      appBar.classList.add("is-zindex-7");
     }
   });
 }
