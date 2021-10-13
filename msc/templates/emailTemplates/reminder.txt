@@ -5,7 +5,7 @@ Form Reminder : {{ questionnaire.name }}.
 
 {{ user_msg|escape|safe }}
 
-Your form link: {{link}}
+Your form link: {{base_url}}{{link}}
 Please copy and paste the link it into a browser window.
 
 This email was sent on behalf of {{ sender.email }}, who has invited you to take part in their questionnaire: {{ questionnaire.name|title }}. If you believe you’ve received this email by mistake, please let us know.

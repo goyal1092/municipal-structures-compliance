@@ -53,6 +53,18 @@ class EmailActivity(MSCBase):
     def get_reminder_subject(self):
         return f"Reminder to fill out {self.questionnaire.name} form"
 
+    def get_reminder_context(self):
+        return {
+            "questionnaire": self.questionnaire,
+            "user_msg": self.user_msg,
+            "link" : reverse('questionnaire-detail', args=(self.questionnaire.id,))
+        }
+
+    def get_account_activation_context(self):
+        return {
+            "link": reverse("password_change")
+        }
+
     def get_subject(self):
         try:
             subject = getattr(self, "get_%s_subject" % self.activity_type)()
@@ -60,18 +72,23 @@ class EmailActivity(MSCBase):
             subject = 'DCOG Tool Notification'
         return subject
 
-    def send_email(self, request):
+    def get_context(self, context):
+        try:
+            to_update = getattr(self, "get_%s_context" % self.activity_type)()
+            context.update(to_update)
+        except AttributeError as e:
+            pass
+        return context
 
+    def send_email(self, request, **kwargs):
+        context = self.get_context(kwargs)
         subject = self.get_subject()
         from_address = settings.FROM_EMAIL_ADDRESS
-        
         protocol = "https://" if request.is_secure() else "http://"
-        context = {
-            "questionnaire": self.questionnaire,
-            "user_msg": self.user_msg,
+        context.update({
             "sender": self.user,
-            "link": f"{protocol}{request.get_host()}{reverse('questionnaire-detail', args=(self.questionnaire.id,))}"
-        }
+            "base_url": f"{protocol}{request.get_host()}"
+        })
         to = [u.email for u in self.to_users.all()]
 
         text = get_template(f"emailTemplates/{self.activity_type}.txt").render(context)
