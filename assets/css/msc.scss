@@ -42,6 +42,10 @@ body {
   width: 140px;
 }
 
+.error-txt{
+  color: #b00020;
+}
+
 .breadcrumb-wrapper {
   background-color: #e57200;
   padding-bottom: 19px;
@@ -580,4 +584,8 @@ img.is-aligned-center {
       text-transform: none;
     }
   }
+}
+
+.mdc-change-passowrd-form{
+  padding: 4em;
 }
