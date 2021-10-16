@@ -83,7 +83,7 @@ class User(AbstractUser):
 
     @property
     def is_national(self):
-        if self.superuser:
+        if self.is_superuser:
             return True
         return self.groups.filter(
             name="SuperAdmin"
@@ -91,7 +91,7 @@ class User(AbstractUser):
 
     @property
     def is_provincial(self):
-        if self.superuser:
+        if self.is_superuser:
             return False
         if self.organisation.parent:
             parent = self.organisation.parent
