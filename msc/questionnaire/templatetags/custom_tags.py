@@ -43,7 +43,7 @@ def submitted_questionnaires(questionnaire, user):
 
     html = get_template(f"subtemplate/progress_bar.html").render({
         "text": f'{submitted_response_count}/{total_count}',
-        "per": (submitted_response_count/total_count)*100,
+        "per": round((float(submitted_response_count)/total_count)*100,1),
     })
 
     return html
