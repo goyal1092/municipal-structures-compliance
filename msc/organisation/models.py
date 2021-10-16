@@ -26,3 +26,11 @@ class Organisation(MSCBase):
             Organisation.objects.filter(parent=self).values_list("id", flat=True)
         )
         return Organisation.objects.filter(id__in=org_ids)
+
+    @property
+    def is_national(self):
+        return self.parent == None
+
+    @property
+    def is_provincial(self):
+        return self.parent and self.parent.parent == None

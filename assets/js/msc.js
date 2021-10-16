@@ -30,3 +30,15 @@ if (opener) {
     }
   });
 }
+
+
+const menuDrawers = document.getElementsByClassName("menu-button");
+
+if (menuDrawers){
+  Array.from(menuDrawers).forEach(function(menuDrawer) {
+    menuDrawer.addEventListener('click', () => {
+      const menu = new mdc.menu.MDCMenu(menuDrawer.parentElement.querySelector('.mdc-menu'));
+      menu.open = true;
+    });
+  });
+}

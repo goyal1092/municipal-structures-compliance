@@ -3,6 +3,14 @@
 <a href="{% url 'forms-submitted' %}">Submitted</a>
 {% endblock %} {% block content %}
 <main class="questionnaires">
+
+  {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+  {% endif %}
   <h1 class="mdc-typography--headline1">
     <i class="material-icons is-primary-tinted" aria-hidden="true">list_alt</i>
     Compliance forms
@@ -10,7 +18,6 @@
   <h2 class="mdc-typography--headline2">
       Submitted forms
   </h2>
-
   <table class="is-table-app">
     <thead>
       <tr>
@@ -25,25 +32,23 @@
         </th>
       </tr>
     </thead>
-    <tbody
-      {% for questionnaire in questionnaires %}
-      {% for response in questionnaire.response_set.all %}
-      {% if response.is_submitted %}
-      <tr>
-        <td>
-          <a href="{% url 'questionnaire-detail' questionnaire.id %}">
-            {{ questionnaire.name }}
-          </a>
-        </td>
-        <td class="has-nowrap">
-          {{ response.organisation }}
-        </td>
-        <td class="has-nowrap">
-          {{ response.created |date:'d/m/Y' }}
-        </td>
-      </tr>
-      {% endif %}
-      {% endfor %}
+    <tbody>
+      {% for response in responses %}
+        <tr>
+          <td>
+            <a href="{% url 'questionnaire-detail' response.questionnaire.id %}">
+              {{ response.questionnaire.name }}
+            </a>
+          </td>
+          <td class="has-nowrap">
+            {{ response.organisation }}
+          </td>
+          <td class="has-nowrap">
+            {{ response.modified |date:'d/m/Y' }}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td>Forms Not submitted yet</td><td></td><td></td></tr>
       {% endfor %}
     </tbody>
   </table>

@@ -21,32 +21,60 @@ from .utils import get_serialized_questioner, check_user_org
 @check_user_org
 def questionnaire_list(request):
 
+    user = request.user
+    organisation = user.organisation
+
     questionnaire_ids = Share.objects.filter(
         target_content_type__model="questionnaire",
         sharer_content_type__model="organisation",
-        sharer_object_id=request.user.organisation.id
+        sharer_object_id=organisation.id
     ).values_list("target_object_id", flat=True)
-    context = {
-        "questionnaires": Questionnaire.objects.filter(
-            is_published=True,
-            id__in=questionnaire_ids,
-            start__lte=timezone.now()
-        ),
+
+    filters = {
+        "is_published": True, "id__in":questionnaire_ids,
+        "start__lte": timezone.now()
     }
-    return render(request, 'questionnaire/list.html', context)
+
+    if not user.is_admin or not user.is_national or not user.is_provincial:
+        filters["close__gte"] = timezone.now()
+
+
+    context = {
+        "questionnaires": Questionnaire.objects.filter(**filters),
+    }
+
+    template_name = 'questionnaire/list.html'
+    if user.is_national or user.is_provincial:
+        template_name = 'questionnaire/admin_list.html'
+    return render(request, template_name, context)
 
 def questionnaire_list_submitted(request):
 
+    user = request.user
+    organisation_ids = [user.organisation.id]
+    if user.is_national:
+        organisation_ids = Organisation.objects.values_list(
+            "id", flat=True
+        )
+    elif user.is_provincial:
+        organisation_ids = user.organisation.get_children().values_list(
+            "id", flat=True
+        )
+
     questionnaire_ids = Share.objects.filter(
         target_content_type__model="questionnaire",
         sharer_content_type__model="organisation",
-        sharer_object_id=request.user.organisation.id
+        sharer_object_id=user.organisation.id,
     ).values_list("target_object_id", flat=True)
+
+    responses = Response.objects.filter(
+        questionnaire_id__in=questionnaire_ids,
+        questionnaire__is_published=True,
+        is_submitted=True,
+        organisation_id__in=organisation_ids
+    )
     context = {
-        "questionnaires": Questionnaire.objects.filter(
-            is_published=True,
-            id__in=questionnaire_ids
-        ),
+        "responses": responses
     }
     return render(request, 'questionnaire/list-submitted.html', context)
 
@@ -104,6 +132,8 @@ class QuestionnaireDetail(TemplateView):
             if not submission_errors and not validation_errors:
                 response.is_submitted = True
                 response.save()
+                messages.success(request, f"Submitted {questionnaire.name} form successfully" )
+                return redirect("forms-submitted")
 
             context["submission_errors"] = submission_errors
 
