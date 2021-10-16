@@ -54,10 +54,10 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         user = request.user
-        org_type = ContentType.objects.get_for_model(
+        org_content_type = ContentType.objects.get_for_model(
             Organisation
         )
-        ques_type = ContentType.objects.get_for_model(
+        ques_content_type = ContentType.objects.get_for_model(
             Questionnaire
         )
 
@@ -74,9 +74,9 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 
             # creator share
             Share.objects.create(
-                target_content_type=ques_type,
+                target_content_type=ques_content_type,
                 target_object_id=obj.id,
-                sharer_content_type=org_type,
+                sharer_content_type=org_content_type,
                 sharer_object_id=creator_org,
                 shared_by=request.user,
                 relationship="creator"
@@ -84,9 +84,9 @@ class QuestionnaireAdmin(admin.ModelAdmin):
 
         shares = [int(idx) for idx in request.POST.getlist("shares", [])]
         shared_with = Share.objects.filter(
-            target_content_type=ques_type,
+            target_content_type=ques_content_type,
             target_object_id=obj.id,
-            sharer_content_type=org_type,
+            sharer_content_type=org_content_type,
         )
 
         if shared_with:
@@ -97,16 +97,22 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                 org_type_id__in=shares
             ).exclude(
                 id__in=shared_with
-            ).values_list("id", flat=True)
+            )
 
             for org in organisations:
+                relationship = "viewer"
+
+                if org.is_national:
+                    relationship = "creator"
+                elif org.is_provincial:
+                    relationship = "admin"
                 Share.objects.create(
-                    target_content_type=ques_type,
+                    target_content_type=ques_content_type,
                     target_object_id=obj.id,
-                    sharer_content_type=org_type,
-                    sharer_object_id=org,
+                    sharer_content_type=org_content_type,
+                    sharer_object_id=org.id,
                     shared_by=request.user,
-                    relationship="viewer"
+                    relationship=relationship
                 )
 
         else:
@@ -114,16 +120,21 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                 id__in=shares
             ).exclude(
                 id__in=shared_with
-            ).values_list("id", flat=True)
+            )
 
             for org in organisations:
+                relationship = "viewer"
+                if org.is_national:
+                    relationship = "creator"
+                elif org.is_provincial:
+                    relationship = "admin"
                 Share.objects.create(
-                    target_content_type=ques_type,
+                    target_content_type=ques_content_type,
                     target_object_id=obj.id,
-                    sharer_content_type=org_type,
-                    sharer_object_id=org,
+                    sharer_content_type=org_content_type,
+                    sharer_object_id=org.id,
                     shared_by=request.user,
-                    relationship="viewer"
+                    relationship=relationship
                 )
             
 

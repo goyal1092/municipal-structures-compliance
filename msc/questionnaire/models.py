@@ -47,6 +47,14 @@ class Questionnaire(MSCBase):
     def is_submitted(self):
         return self.response_set.filter(is_submitted=True).exists()
 
+    @property
+    def submitted_org_count(self):
+        return self.response_set.filter(is_submitted=True).count()
+
+    @property
+    def total_org_count(self):
+        return 132
+
 
 class Section(MSCBase):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)

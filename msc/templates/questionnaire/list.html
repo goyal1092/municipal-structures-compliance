@@ -23,29 +23,52 @@
         <th class="has-nowrap" align="left">
           Completion
         </th>
+        {% if request.user.is_admin %}
+          <th class="has-nowrap" align="center">
+          </th>
+        {% endif %}
       </tr>
     </thead>
     <tbody
       {% for questionnaire in questionnaires %}
-      {% if not questionnaire.is_submitted %}
-      <tr>
-        <td>
-          <a href="{% url 'questionnaire-detail' questionnaire.id %}">
-            {{ questionnaire.name }}
-          </a>
-        </td>
-        <td class="has-nowrap">
-          {{ questionnaire.close |date:'d/m/Y' }}
-          <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
-        </td>
-        <td class="has-nowrap">
-          {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
-          {% if questionnaire.response_count == questionnaire.question_count %}
-          <span class="is-tag is-success">Ready to submit</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %}
+        {% if not questionnaire.is_submitted %}
+          <tr>
+            <td>
+              <a href="{% url 'questionnaire-detail' questionnaire.id %}">
+                {{ questionnaire.name }}
+              </a>
+            </td>
+            <td class="has-nowrap">
+              {{ questionnaire.close |date:'d/m/Y' }}
+              <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+            </td>
+            <td class="has-nowrap">
+              {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
+              {% if questionnaire.response_count == questionnaire.question_count %}
+                <span class="is-tag is-success">Ready to submit</span>
+              {% endif %}
+            </td>
+            {% if request.user.is_admin %}
+              <td class="has-nowrap">
+                <button class="menu-button mdc-button"><i class="material-icons open-side-menu" aria-hidden="true">more_vert</i></button>
+                <div class="demo-menu mdc-menu-surface--anchor">
+                  <div class="mdc-menu mdc-menu-surface">
+                    <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                      <li class="mdc-list-item" role="menuitem">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text"><i class="material-icons mdc-button__icon" aria-hidden="true">notifications</i>
+                          Send Reminder
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </td>
+            {% endif %}
+          </tr>
+        {% endif %}
+      {% empty %}
+        <tr><td>No Active forms for submission</td><td></td><td></td></tr>
       {% endfor %}
     </tbody>
   </table>
