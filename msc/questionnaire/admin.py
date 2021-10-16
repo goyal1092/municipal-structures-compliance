@@ -92,7 +92,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
         if shared_with:
             shared_with = [share.sharer.id for share in shared_with]
 
-        if not request.user.is_national:
+        if request.user.is_superuser or not request.user.is_national:
             organisations = Organisation.objects.filter(
                 org_type_id__in=shares
             ).exclude(
