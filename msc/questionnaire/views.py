@@ -20,7 +20,6 @@ from .utils import get_serialized_questioner, check_user_org
 @login_required
 @check_user_org
 def questionnaire_list(request):
-
     user = request.user
     organisation = user.organisation
 
