@@ -33,9 +33,7 @@
         {% endfor %}
     </div>
 
-{% endif %}
-
-{% if current_user.is_national %}
+{% elif current_user.is_national %}
     <div class="form-row field-is_published">
         {% for org in organisations %}
             <div class="checkbox-row">
@@ -45,10 +43,8 @@
             </div>
         {% endfor %}
     </div>
-{% endif %}
 
-
-{% if current_user.is_admin %}
+{% elif current_user.is_admin %}
     {% for org_type in organisation_types %}
         <div class="checkbox-row">
             <input type="checkbox" name="shares" id="id_share_with_{{ org_type }}" value="{{org_type.org_type__id}}" {% if org_type.count == org_type.shared_with  %} checked="checked" {% endif %}><label class="vCheckboxLabel" for="id_share_with_{{ org_type }}">
