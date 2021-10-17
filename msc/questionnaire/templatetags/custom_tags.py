@@ -43,7 +43,14 @@ def submitted_questionnaires(questionnaire, user):
 
     html = get_template(f"subtemplate/progress_bar.html").render({
         "text": f'{submitted_response_count}/{total_count}',
-        "per": (submitted_response_count/total_count)*100,
+        "per": round((float(submitted_response_count)/total_count)*100,1),
     })
 
     return html
+
+
+@register.simple_tag
+def url_replace(request, field, value):
+    dict_ = request.GET.copy()
+    dict_[field] = value
+    return dict_.urlencode()

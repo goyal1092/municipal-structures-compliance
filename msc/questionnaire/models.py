@@ -43,17 +43,11 @@ class Questionnaire(MSCBase):
     def overdue(self):
         return self.close < timezone.now()
 
-    @property
-    def is_submitted(self):
-        return self.response_set.filter(is_submitted=True).exists()
-
-    @property
-    def submitted_org_count(self):
-        return self.response_set.filter(is_submitted=True).count()
-
-    @property
-    def total_org_count(self):
-        return 132
+    def is_submitted(self, organisation):
+        return self.response_set.filter(
+            organisation=organisation,
+            is_submitted=True
+        ).exists()
 
 
 class Section(MSCBase):
