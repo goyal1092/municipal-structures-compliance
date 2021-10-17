@@ -7,8 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.views.generic import TemplateView
+from django.core.paginator import Paginator
+from django.db.models import Q, Count
 
-from msc.organisation.models import Organisation
+from msc.questionnaire.models import Questionnaire
+from msc.organisation.models import Organisation, Group
 from msc.response.views import save_response, submit_form
 from msc.response.models import Response
 from msc.authentication.models import Share
@@ -38,8 +41,10 @@ def questionnaire_list(request):
         filters["close__gte"] = timezone.now()
 
 
+    questionnaires = Questionnaire.objects.filter(**filters)
+    questionnaires = [q for q in questionnaires if not q.is_submitted(request.user.organisation)]
     context = {
-        "questionnaires": Questionnaire.objects.filter(**filters),
+        "questionnaires": questionnaires
     }
 
     template_name = 'questionnaire/list.html'
@@ -51,14 +56,32 @@ def questionnaire_list_submitted(request):
 
     user = request.user
     organisation_ids = [user.organisation.id]
+
+    filters = {
+        "forms": [],
+        "org_type": {},
+        "selected": {}
+    }
+
     if user.is_national:
         organisation_ids = Organisation.objects.values_list(
             "id", flat=True
         )
+        for org_type in Group.objects.all().exclude(id=user.organisation.org_type_id):
+            filters["org_type"][org_type.name] = Organisation.objects.filter(org_type=org_type)
+
     elif user.is_provincial:
-        organisation_ids = user.organisation.get_children().values_list(
+        organisations = user.organisation.get_children(include_self=False)
+        organisation_ids = organisations.values_list(
             "id", flat=True
         )
+
+        org_types = organisations.values_list("org_type__name", flat=True).distinct()
+
+        for org_type in org_types:
+            filters["org_type"][org_type] = Organisation.objects.filter(
+                org_type__name=org_type, parent=user.organisation
+            )
 
     questionnaire_ids = Share.objects.filter(
         target_content_type__model="questionnaire",
@@ -72,8 +95,49 @@ def questionnaire_list_submitted(request):
         is_submitted=True,
         organisation_id__in=organisation_ids
     )
+    forms = Questionnaire.objects.filter(
+        id__in=responses.values_list("questionnaire_id", flat=True)
+    ).distinct()
+
+    filters["forms"] = forms
+    search = request.GET.get("search", '')
+
+    if search.strip():
+        responses = responses.filter(
+            Q(questionnaire__name__icontains=search.strip()) |
+             Q(organisation__name__icontains=search.strip())
+        )
+        filters["selected"]["search"] = search.strip()
+
+
+
+    form = request.GET.get("form", None)
+    if form:
+        responses = responses.filter(questionnaire_id=form)
+        filters["selected"]["form"] = int(form)
+
+    org_filter = [int(x) for x in request.GET.getlist("organisation", []) if x.isnumeric()]
+    if org_filter:
+        organisations_to_filter = []
+        for o in Organisation.objects.filter(id__in=org_filter):
+            organisations_to_filter = organisations_to_filter + list(o.get_children())
+        responses = responses.filter(organisation__in=organisations_to_filter)
+        filters["selected"]["organisation"] = org_filter
+
+    p = Paginator(responses, 10)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        page_obj = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        page_obj = p.page(p.num_pages)
+
     context = {
-        "responses": responses
+        "page_obj": page_obj,
+        "filters": filters,
     }
     return render(request, 'questionnaire/list-submitted.html', context)
 

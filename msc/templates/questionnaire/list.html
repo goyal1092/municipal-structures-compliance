@@ -29,9 +29,8 @@
         {% endif %}
       </tr>
     </thead>
-    <tbody
+    <tbody>
       {% for questionnaire in questionnaires %}
-        {% if not questionnaire.is_submitted %}
           <tr>
             <td>
               <a href="{% url 'questionnaire-detail' questionnaire.id %}">
@@ -64,7 +63,6 @@
                   </div>
                 </div>
               </td>
-            {% endif %}
           </tr>
         {% endif %}
       {% empty %}
