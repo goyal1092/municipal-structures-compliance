@@ -47,10 +47,11 @@ if (menuDrawers){
 
 const msgBtns = document.getElementsByClassName("send_message");
 
+
 if (msgBtns){
   Array.from(msgBtns).forEach(function(msgBtn) {
     msgBtn.addEventListener('click', () => {
-      const dialog = new mdc.dialog.MDCDialog(msgBtn.parentElement.querySelector('.mdc-dialog'));
+      const dialog = new mdc.dialog.MDCDialog(msgBtn.closest('td').querySelector('.mdc-dialog'));
       dialog.open();
     });
   });

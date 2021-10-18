@@ -1,19 +1,11 @@
 from django import template
-<<<<<<< HEAD
 from msc.questionnaire.models import Questionnaire
 from msc.organisation.models import Organisation
 from msc.authentication.models import Share
 
 from django.template.loader import get_template
 
-=======
->>>>>>> 18ef4ee... Emails to user on creation, forgot passowrd, change password & reminders
 register = template.Library()
-
-
-from django.conf import settings
-from msc.questionnaire.models import Questionnaire
-
 
 
 @register.filter

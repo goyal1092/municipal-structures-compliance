@@ -7,7 +7,7 @@ from ckeditor.fields import RichTextField
 
 from .base import MSCBase
 
-from msc.authentication.utils import get_sharers
+from msc.authentication.models import Share
 from msc.organisation.models import Organisation
 
 
@@ -50,42 +50,69 @@ class Questionnaire(MSCBase):
         ).exists()
 
     def get_reminder_options(self, user):
-        children = list(set(user.organisation.get_children(False).values_list(
-            "org_type__name", flat=True
-        )))
-        is_user_admin = user.is_admin or user.is_national
-        options = []
-
-        organisation_ids = get_sharers(self)
-        all_organisations = Organisation.objects.filter(
-            id__in=organisation_ids, org_type__name__in=children
+        shares = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            target_object_id=self.id
         )
-        submitted_organisation_ids = self.response_set.filter(
-            is_submitted=True,
-            organisation__in=all_organisations
-        ).values_list("organisation_id", flat=True)
+        provinces = [share.sharer for share in shares.filter(relationship="admin")]
+        municipalities = [share.sharer for share in shares.filter(relationship="viewer")]
+        responses = self.response_set.filter(is_submitted=True).values_list(
+            "organisation_id", flat=True
+        )
 
-        submitted_organisations = all_organisations.filter(id__in=submitted_organisation_ids)
-        unsubmitted_organistions = all_organisations.exclude(id__in=submitted_organisation_ids)
+        submited_munis = [muni for muni in municipalities if muni.id in responses]
+        unsubmited_munis = [muni for muni in municipalities if muni.id not in responses]
 
-        for child in children:
-            org_type = child.lower()
+        options = []
+        if user.is_national and provinces:
+            submited_provinces = []
+            unsubmited_provinces = []
+
+            org_type = provinces[0].org_type
+            for province in provinces:
+                munis = set(user.organisation.get_children(False))
+                is_submitted = munis.issubset(set(submited_munis))
+                if is_submitted:
+                    submited_provinces.append(province)
+                else:
+                    unsubmited_provinces.append(province)
+
             for text in settings.EMAIL_ORG_USER_FILTER:
-
-                filtered_organisation = all_organisations
                 if "unsubmitted" in text[0]:
-                    filtered_organisation = unsubmitted_organistions.filter(org_type__name=child)
+                    filtered_organisation = unsubmited_provinces
                 elif "submitted" in text[0]:
-                    filtered_organisation = submitted_organisations.filter(org_type__name=child)
+                    filtered_organisation = submited_provinces
+                else:
+                    filtered_organisation = provinces
 
                 key = Template(text[0]).substitute({'org_type': org_type})
-                count = filtered_organisation.count()
+                count = len(filtered_organisation)
                 options.append({
                     "name": key,
                     "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
                     "organisations": filtered_organisation,
                     "count": count,
                 })
+        if municipalities:
+            org_type = municipalities[0].org_type
+            for text in settings.EMAIL_ORG_USER_FILTER:
+                if "unsubmitted" in text[0]:
+                    filtered_organisation = unsubmited_munis
+                elif "submitted" in text[0]:
+                    filtered_organisation = submited_munis
+                else:
+                    filtered_organisation = municipalities
+
+                key = Template(text[0]).substitute({'org_type': org_type})
+                count = len(filtered_organisation)
+                options.append({
+                    "name": key,
+                    "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
+                    "organisations": filtered_organisation,
+                    "count": count,
+                })
+
         return options
 
 

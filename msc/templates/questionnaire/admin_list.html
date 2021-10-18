@@ -48,7 +48,7 @@
             <div class="demo-menu mdc-menu-surface--anchor">
               <div class="mdc-menu mdc-menu-surface">
                 <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                  <li class="mdc-list-item" role="menuitem">
+                  <li class="mdc-list-item send_message" role="menuitem">
                     <span class="mdc-list-item__ripple"></span>
                     <span class="mdc-list-item__text"><i class="material-icons mdc-button__icon" aria-hidden="true">notifications</i>
                       Send Reminder
@@ -57,6 +57,7 @@
                 </ul>
               </div>
             </div>
+            {% include 'questionnaire/reminder_modal.html' %}
           </td>
         </tr>
       {% endfor %}
