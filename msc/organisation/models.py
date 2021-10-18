@@ -103,3 +103,11 @@ class EmailActivity(MSCBase):
 
         if to and msg:
             return msg.send()
+
+          @property
+    def is_national(self):
+        return self.parent == None
+
+    @property
+    def is_provincial(self):
+        return self.parent and self.parent.parent == None

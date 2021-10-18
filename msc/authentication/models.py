@@ -83,7 +83,16 @@ class User(AbstractUser):
 
     @property
     def is_national(self):
-        return self.groups.filter(name="SuperAdmin").exists()
+        return self.groups.filter(
+            name="SuperAdmin"
+        ).exists() or self.organisation.parent == None
+
+    @property
+    def is_provincial(self):
+        if self.organisation.parent:
+            parent = self.organisation.parent
+            return parent.parent == None
+        return False
 
 
 share_objects = models.Q(app_label='questionnaire', model='questionnaire')

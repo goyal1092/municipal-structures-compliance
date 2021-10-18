@@ -37,6 +37,7 @@
           <i class="material-icons mdc-button__icon" aria-hidden="true">save</i>
           <span class="mdc-button__label">Save progress</span>
         </button>
+        {% if request.user.is_admin %}
         <button 
           type="submit"
           name="submit_form"
@@ -46,6 +47,7 @@
           <i class="material-icons mdc-button__icon" aria-hidden="true">send</i>
           <span class="mdc-button__label">Submit form</span>
         </button>
+        {% endif %}
       </div>
     </div>
   </nav>

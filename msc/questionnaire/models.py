@@ -34,15 +34,20 @@ class Questionnaire(MSCBase):
     
     @property
     def question_response_percentage(self):
-        return (self.response_count / self.question_count) * 100
+        if self.question_count == 0:
+            return 0
+        else:
+            return (self.response_count / self.question_count) * 100
     
     @property
     def overdue(self):
         return self.close < timezone.now()
 
-    @property
-    def is_submitted(self):
-        return self.response_set.filter(is_submitted=True).exists()
+    def is_submitted(self, organisation):
+        return self.response_set.filter(
+            organisation=organisation,
+            is_submitted=True
+        ).exists()
 
     def get_reminder_options(self, user):
         children = list(set(user.organisation.get_children(False).values_list(

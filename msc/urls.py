@@ -16,7 +16,7 @@ urlpatterns = [
     path("forms/<int:pk>/", QuestionnaireDetail.as_view(), name="questionnaire-detail"),
     path('ckeditor', include('ckeditor_uploader.urls')),
     # path("save-response/", save_response, name="save-response"),
-
     path("send_reminder/", send_reminder, name="send_reminder"),
+    path("save-response/", save_response, name="save-response"),
 ]
 

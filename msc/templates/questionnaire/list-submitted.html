@@ -1,15 +1,66 @@
-{% extends "layout.html" %} {% block breadcrumbs %}
+{% extends "layout.html" %} {% load custom_tags %} {% block breadcrumbs %}
 <a href="{% url 'root' %}">Compliance forms</a>
 <a href="{% url 'forms-submitted' %}">Submitted</a>
 {% endblock %} {% block content %}
 <main class="questionnaires">
+
+  {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+  {% endif %}
+
   <h1 class="mdc-typography--headline1">
     <i class="material-icons is-primary-tinted" aria-hidden="true">list_alt</i>
     Compliance forms
   </h1>
   <h2 class="mdc-typography--headline2">
+    {% if request.user.is_national or request.user.is_provincial %}
+      Form submissions received ({{ page_obj.paginator.count }})
+    {% else %}
       Submitted forms
+    {% endif %}
   </h2>
+
+  <form class="mdc-layout-grid my-2" method="GET">
+    <div class="mdc-layout-grid__inner">
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-5">
+         <label class="mdc-text-field mdc-text-field--filled mdc-text-field--no-label search-box-submitted-form">
+            <span class="mdc-text-field__ripple"></span>
+            <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">search</i>
+            <input class="mdc-text-field__input" type="text" placeholder="Search for a form or municipality..." name="search" aria-label="Label" value="{% if filters.selected.search %} {{filters.selected.search}} {% endif %}">
+            <span class="mdc-line-ripple"></span>
+          </label>
+      </div>
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7 text-end">
+         <select class="dropdown-width-auto form-control mdc-custom-select mdc-layout-xs-3" id="exampleFormControlSelect1" name="form">
+              <option value="">All Forms</option>
+              {% for obj in filters.forms %}
+                <option value="{{ obj.id }}" {% if filters.selected.form == obj.id %}selected="selected"{% endif %}>{{ obj.name }}</option>
+              {% endfor %}
+          </select>
+          {% for org_name, objs in filters.org_type.items %}
+            <select class="dropdown-width-auto form-control mdc-custom-select" id="exampleFormControlSelect1" name="organisation">
+                <option value="">All {{ org_name }}</option>
+                {% for obj in objs %}
+                  <option value="{{ obj.id }}" {% if obj.id in filters.selected.organisation %}selected="selected"{% endif %}>{{ obj.name }}</option>
+                {% endfor %}
+            </select>
+          {% endfor %}
+      </div>
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12 text-end">
+          <button type="submit" name="" value=""
+            class="mdc-button mdc-button--raised mdc-button--leading">
+            <span class="mdc-button__ripple"></span>
+            <span class="mdc-button__label">Search / Filter</span>
+          </button>
+      </div>
+
+    </div>
+
+  </form>
 
   <table class="is-table-app">
     <thead>
@@ -25,27 +76,47 @@
         </th>
       </tr>
     </thead>
-    <tbody
-      {% for questionnaire in questionnaires %}
-      {% for response in questionnaire.response_set.all %}
-      {% if response.is_submitted %}
-      <tr>
-        <td>
-          <a href="{% url 'questionnaire-detail' questionnaire.id %}">
-            {{ questionnaire.name }}
-          </a>
-        </td>
-        <td class="has-nowrap">
-          {{ response.organisation }}
-        </td>
-        <td class="has-nowrap">
-          {{ response.created |date:'d/m/Y' }}
-        </td>
-      </tr>
-      {% endif %}
-      {% endfor %}
+    <tbody>
+      {% for response in page_obj.object_list %}
+        <tr>
+          <td>
+            <a href="{% url 'questionnaire-detail' response.questionnaire.id %}">
+              {{ response.questionnaire.name }}
+            </a>
+          </td>
+          <td class="has-nowrap">
+            {{ response.organisation }}
+          </td>
+          <td class="has-nowrap">
+            {{ response.modified |date:'d/m/Y' }}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td>Forms Not submitted yet</td><td></td><td></td></tr>
       {% endfor %}
     </tbody>
   </table>
+  {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination py-2">
+      {% if page_obj.has_previous %}
+        <a href="?{% url_replace request 'page' page_obj.previous_page_number %}">&laquo;</a>
+      {% else %}
+      <a href="#" class="disabled">&laquo;</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% ifequal num page_obj.number %}
+          <a href="#" class="active">{{ num }}</a>
+        {% else %}
+          <a href="?{% url_replace request 'page' num %}">{{ num }}</a>
+        {% endifequal %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a href="?{% url_replace request 'page' page_obj.next_page_number %}">&raquo;</a>
+      {% else %}
+        <a href="#" class="disabled">&raquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
 </main>
 {% endblock %}

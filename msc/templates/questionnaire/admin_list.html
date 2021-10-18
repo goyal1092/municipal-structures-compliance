@@ -1,0 +1,66 @@
+{% extends "layout.html" %} 
+{% load custom_tags %}
+{% block breadcrumbs %}
+<a href="{% url 'root' %}">Compliance forms</a>
+<a href="{% url 'forms-active' %}">Active</a>
+{% endblock %} {% block content %}
+<main class="questionnaires">
+  <h1 class="mdc-typography--headline1">
+    <i class="material-icons is-primary-tinted" aria-hidden="true">list_alt</i>
+    Compliance forms
+  </h1>
+  <h2 class="mdc-typography--headline2">
+      Active forms
+  </h2>
+
+  <table class="is-table-app">
+    <thead>
+      <tr>
+        <th width="60%" align="left">
+          Form name
+        </th>
+        <th class="has-nowrap" align="left">
+          Due date
+        </th>
+        <th width="99%" class="has-nowrap" align="left">
+          Submissions received
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody
+      {% for questionnaire in questionnaires %}
+        <tr>
+          <td>
+            <a href="{% url 'questionnaire-detail' questionnaire.id %}">
+              {{ questionnaire.name }}
+            </a>
+          </td>
+          <td class="has-nowrap">
+            {{ questionnaire.close |date:'d/m/Y' }}
+            <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+          </td>
+          <td class="has-nowrap">
+            {{ questionnaire|submitted_questionnaires:request.user }}
+          </td>
+          <td class="has-nowrap">
+            <button class="menu-button mdc-button"><i class="material-icons open-side-menu" aria-hidden="true">more_vert</i></button>
+            <div class="demo-menu mdc-menu-surface--anchor">
+              <div class="mdc-menu mdc-menu-surface">
+                <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
+                  <li class="mdc-list-item" role="menuitem">
+                    <span class="mdc-list-item__ripple"></span>
+                    <span class="mdc-list-item__text"><i class="material-icons mdc-button__icon" aria-hidden="true">notifications</i>
+                      Send Reminder
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</main>
+{% endblock %}
