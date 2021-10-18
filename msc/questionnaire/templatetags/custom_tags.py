@@ -40,6 +40,10 @@ def submitted_questionnaires(questionnaire, user):
         total_count = Organisation.objects.filter(
             id__in=organisation_ids, parent=user.organisation
         ).count()
+    
+    #TODO: Better way to prevent division by zero
+    if total_count == 0:
+        total_count = 1
 
     html = get_template(f"subtemplate/progress_bar.html").render({
         "text": f'{submitted_response_count}/{total_count}',
