@@ -88,6 +88,45 @@ class Questionnaire(MSCBase):
                 })
         return options
 
+    def get_reminder_options(self, user):
+        children = list(set(user.organisation.get_children(False).values_list(
+            "org_type__name", flat=True
+        )))
+        is_user_admin = user.is_admin or user.is_national
+        options = []
+
+        organisation_ids = get_sharers(self)
+        all_organisations = Organisation.objects.filter(
+            id__in=organisation_ids, org_type__name__in=children
+        )
+        submitted_organisation_ids = self.response_set.filter(
+            is_submitted=True,
+            organisation__in=all_organisations
+        ).values_list("organisation_id", flat=True)
+
+        submitted_organisations = all_organisations.filter(id__in=submitted_organisation_ids)
+        unsubmitted_organistions = all_organisations.exclude(id__in=submitted_organisation_ids)
+
+        for child in children:
+            org_type = child.lower()
+            for text in settings.EMAIL_ORG_USER_FILTER:
+
+                filtered_organisation = all_organisations
+                if "unsubmitted" in text[0]:
+                    filtered_organisation = unsubmitted_organistions.filter(org_type__name=child)
+                elif "submitted" in text[0]:
+                    filtered_organisation = submitted_organisations.filter(org_type__name=child)
+
+                key = Template(text[0]).substitute({'org_type': org_type})
+                count = filtered_organisation.count()
+                options.append({
+                    "name": key,
+                    "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
+                    "organisations": filtered_organisation,
+                    "count": count,
+                })
+        return options
+
 
 class Section(MSCBase):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)

@@ -43,12 +43,9 @@ class EmailActivity(MSCBase):
     questionnaire = models.ForeignKey(
         "questionnaire.Questionnaire", on_delete=models.CASCADE, null=True, blank=True
     )
-    activity_type = models.CharField(
-        max_length=32, choices=settings.EMAIL_ACTIVITY_TYPE)
-    to_users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="users")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name="sender")
+    activity_type = models.CharField(max_length=32, choices=settings.EMAIL_ACTIVITY_TYPE)
+    to_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="users")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sender")
     org_user_filter = models.CharField(max_length=100, null=True, blank=True)
     user_msg = models.TextField(null=True, blank=True)
 
@@ -62,7 +59,7 @@ class EmailActivity(MSCBase):
         return {
             "questionnaire": self.questionnaire,
             "user_msg": self.user_msg,
-            "link": reverse('questionnaire-detail', args=(self.questionnaire.id,))
+            "link" : reverse('questionnaire-detail', args=(self.questionnaire.id,))
         }
 
     def get_account_activation_context(self):
@@ -88,7 +85,6 @@ class EmailActivity(MSCBase):
     def send_email(self, request, **kwargs):
         context = self.get_context(kwargs)
         subject = self.get_subject()
-        print(settings.DEFAULT_FROM_EMAIL)
         from_address = settings.DEFAULT_FROM_EMAIL
         protocol = "https://" if request.is_secure() else "http://"
         context.update({
@@ -97,10 +93,8 @@ class EmailActivity(MSCBase):
         })
         to = [u.email for u in self.to_users.all()]
 
-        text = get_template(
-            f"emailTemplates/{self.activity_type}.txt").render(context)
-        html = get_template(
-            f"emailTemplates/{self.activity_type}.html").render(context)
+        text = get_template(f"emailTemplates/{self.activity_type}.txt").render(context)
+        html = get_template(f"emailTemplates/{self.activity_type}.html").render(context)
 
         if not text and not html:
             raise Exception("Email body cannot be empty")
@@ -111,11 +105,3 @@ class EmailActivity(MSCBase):
 
         if to and msg:
             return msg.send()
-
-    @property
-    def is_national(self):
-        return self.parent == None
-
-    @property
-    def is_provincial(self):
-        return self.parent and self.parent.parent == None
