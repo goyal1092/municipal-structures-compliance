@@ -37,7 +37,10 @@ class Questionnaire(MSCBase):
     
     @property
     def question_response_percentage(self):
-        return (self.response_count / self.question_count) * 100
+        if self.question_count == 0:
+            return 0
+        else:
+            return (self.response_count / self.question_count) * 100
     
     @property
     def overdue(self):
