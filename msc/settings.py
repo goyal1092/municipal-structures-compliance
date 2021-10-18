@@ -258,6 +258,7 @@ LOGOUT_REDIRECT_URL = '/'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
+print(EMAIL_HOST_PASSWORD)
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -265,7 +266,7 @@ EMAIL_USE_TLS = True
 # EMAIL_HOST = 'localhost'
 # EMAIL_PORT = 1025
 
-FROM_EMAIL_ADDRESS = "no-reply.openup.org.za"
+DEFAULT_FROM_EMAIL = env('EMAIL_FROM_ADDRESS', default='no-reply@openup.org.za')
 
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", False)
 if TAG_MANAGER_ENABLED:
