@@ -3,6 +3,7 @@ import string
 
 from django.contrib import admin
 
+from django.conf import settings
 
 from django import forms
 from django.contrib import admin
