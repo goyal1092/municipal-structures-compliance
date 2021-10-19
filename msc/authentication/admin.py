@@ -91,11 +91,8 @@ class UserAdmin(BaseUserAdmin):
                 obj.groups.remove(group)
 
         if not change:
-            if settings.DEBUG:
-                password = "test1234"
-            else:
-                alphabet = string.ascii_letters + string.digits
-                password = ''.join(secrets.choice(alphabet) for i in range(15))
+            alphabet = string.ascii_letters + string.digits
+            password = ''.join(secrets.choice(alphabet) for i in range(15))
             obj.set_password(password)
             obj.username = obj.email.split("@")[0]
             obj.save()
