@@ -1,0 +1,108 @@
+{% extends "layout.html" %} 
+{% load custom_tags %}
+{% load humanize %}
+{% block breadcrumbs %}
+<a href="{% url 'root' %}">Compliance forms</a>
+<a href="{% url 'questionnaire-detail' questionnaire.id %}">
+  {{ questionnaire.name }}
+</a>
+{% endblock %} 
+{% block content %}
+<main class="questionnaires">
+  <form
+      method="post"
+      action="{% url 'questionnaire-detail' questionnaire.id %}"
+    >
+      {% csrf_token %}
+      <input
+        type="hidden"
+        name="questionnaire_id"
+        value="{{questionnaire.id}}"
+      />
+  <nav class="mdc-layout-grid has-background-white is-top-minus-210px">
+    <div class="mdc-layout-grid__inner">
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+        <h1 title="{{ questionnaire.name }}" class="mdc-typography--headline1 has-nowrap has-overflow-ellipsis">
+          <i class="material-icons mdc-button__icon is-primary-tinted" aria-hidden="true">list_alt</i>
+          {{ questionnaire.name }} by {{ organisation.name }}
+        </h1>
+      </div>
+    </div>
+  </nav>
+  <div class="is-breakout-full-width is-background-color-grey-light mt-1">
+    <div class="is-contained py-2">
+      <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+            <div class="mdc-card py-1 px-1 is-line-height-1-5">
+              <div>
+                <span class="is-bold">Questions answered:</span>
+                <br />
+                <span class="is-bar-background">
+                  <span class="is-bar" style="width: {{ questionnaire.question_response_percentage | floatformat:0 }}%;">
+                    <span class="is-bar-text has-nowrap">
+                      {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+            <div class="mdc-card py-1 px-1 is-line-height-1-5">
+              <div>
+                <span class="is-bold">Date Submitted:</span>
+                <br />
+                <span>{{ response.modified | date:'d/m/Y' }}</span>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+      {% for section in sections %}
+      <div class="mt-4">
+        <h2 class="mdc-typography--headline2 is-section-header">{{section.label}}</h2>
+
+        <div>
+          {% for question in section.questions %}
+          <div class="my-2">
+            <h3 class="mdc-typography--headline3">
+              Question {{ question.sno }}
+            </h3>
+            <div>
+              <p class="is-size-1-4">{{ question.obj.text }}</p>
+              {% if question.response %}
+                <span class="bck-subm-response">{{question.response.value}}</span>
+              {% else %}
+                <span class="bck-subm-response">N/A</span>
+              {% endif %}
+            </div>
+            
+            <div>
+              {% for sub_question in question.children %}
+              <h4 class="mdc-typography--headline4">
+                Question {{ sub_question.sno }}
+              </h4>
+
+              <div class="">
+                <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
+                {% if sub_question.response %}
+                  <span class="bck-subm-response">{{sub_question.response.value}}</span>
+                {% else %}
+                  <span class="bck-subm-response">N/A</span>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </form>
+</main>
+{% endblock %}

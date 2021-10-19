@@ -53,6 +53,8 @@ def questionnaire_list(request):
         template_name = 'questionnaire/admin_list.html'
     return render(request, template_name, context)
 
+@login_required
+@check_user_org
 def questionnaire_list_submitted(request):
 
     user = request.user
@@ -226,3 +228,26 @@ def active_form_summary_view(request, pk):
     }
     return render(request, "questionnaire/active_form_summary_view.html", context)
 
+
+@login_required
+@check_user_org
+def submited_form_view(request, questionnaire_id, organisation_id):
+    user = request.user
+    questionnaire = get_object_or_404(Questionnaire, pk=questionnaire_id)
+    organisation = get_object_or_404(Organisation, pk=organisation_id)
+
+    if not user.is_national:
+        organisations = organisation.get_children(include_self=True)
+        if user.organisation not in organisations:
+            raise Http404
+
+
+    context = {
+        "questionnaire": questionnaire,
+        "sections": get_serialized_questioner(questionnaire, organisation),
+        "organisation": organisation,
+        "response": Response.objects.filter(
+            organisation=organisation, questionnaire=questionnaire
+        ).first()
+    }
+    return render(request, 'questionnaire/submitted_form_view.html', context)
