@@ -206,7 +206,9 @@ DEFAULT_INPUT_OPTIONS = {
         "response_type": "str"
     },
     "number": {
-        "validations": {},
+        "validations": {
+            "min": 0,
+        },
         "placeholder": "",
         "response_type": "int"
     }
