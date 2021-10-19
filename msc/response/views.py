@@ -65,11 +65,13 @@ def submit_form(questionnaire, response):
                     parent_question_resposne = responses.filter(
                         question=parent.id
                     ).order_by("-version").first()
-
                     if (
                         ((logic.when == "parent" and parent_question_resposne) and
                         (not question_response or not question_response.value)) or
-                        ((logic.when == "parent_value" and parent_question_resposne.value == logic.values) and
+                        ((logic.when == "parent_value" and (
+                            parent_question_resposne.value == logic.values or 
+                            logic.values in parent_question_resposne.value
+                        )) and
                         (not question_response or not question_response.value))
                     ):
                         errors[question.id] = "This question is mandatory"
