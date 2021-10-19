@@ -1,17 +1,14 @@
+from string import Template
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from ckeditor.fields import RichTextField
 
-class MSCBase(models.Model):
-    created = models.DateTimeField(auto_now_add=True,
-                                   help_text="Date and time this object was created.")
-    modified = models.DateTimeField(auto_now=True,
-                                    help_text="Date and time this object was last modified.")
+from .base import MSCBase
 
-    class Meta:
-        abstract = True
+from msc.authentication.models import Share
+from msc.organisation.models import Organisation
 
 
 class Questionnaire(MSCBase):
@@ -51,6 +48,72 @@ class Questionnaire(MSCBase):
             organisation=organisation,
             is_submitted=True
         ).exists()
+
+    def get_reminder_options(self, user):
+        shares = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            target_object_id=self.id
+        )
+        provinces = [share.sharer for share in shares.filter(relationship="admin")]
+        municipalities = [share.sharer for share in shares.filter(relationship="viewer")]
+        responses = self.response_set.filter(is_submitted=True).values_list(
+            "organisation_id", flat=True
+        )
+
+        submited_munis = [muni for muni in municipalities if muni.id in responses]
+        unsubmited_munis = [muni for muni in municipalities if muni.id not in responses]
+
+        options = []
+        if user.is_national and provinces:
+            submited_provinces = []
+            unsubmited_provinces = []
+
+            org_type = provinces[0].org_type
+            for province in provinces:
+                munis = set(user.organisation.get_children(False))
+                is_submitted = munis.issubset(set(submited_munis))
+                if is_submitted:
+                    submited_provinces.append(province)
+                else:
+                    unsubmited_provinces.append(province)
+
+            for text in settings.EMAIL_ORG_USER_FILTER:
+                if "unsubmitted" in text[0]:
+                    filtered_organisation = unsubmited_provinces
+                elif "submitted" in text[0]:
+                    filtered_organisation = submited_provinces
+                else:
+                    filtered_organisation = provinces
+
+                key = Template(text[0]).substitute({'org_type': org_type})
+                count = len(filtered_organisation)
+                options.append({
+                    "name": key,
+                    "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
+                    "organisations": filtered_organisation,
+                    "count": count,
+                })
+        if municipalities:
+            org_type = municipalities[0].org_type
+            for text in settings.EMAIL_ORG_USER_FILTER:
+                if "unsubmitted" in text[0]:
+                    filtered_organisation = unsubmited_munis
+                elif "submitted" in text[0]:
+                    filtered_organisation = submited_munis
+                else:
+                    filtered_organisation = municipalities
+
+                key = Template(text[0]).substitute({'org_type': org_type})
+                count = len(filtered_organisation)
+                options.append({
+                    "name": key,
+                    "text": Template(text[1]).substitute({'org_type': org_type, 'count': count}),
+                    "organisations": filtered_organisation,
+                    "count": count,
+                })
+
+        return options
 
 
 class Section(MSCBase):

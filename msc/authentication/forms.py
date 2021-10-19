@@ -14,7 +14,10 @@ class CustomUserCreationForm(UserCreationForm):
     fields, plus a repeated password."""
 
     is_admin = forms.BooleanField(required=False, initial=False, label='Add User as organisation Admin')
-    
+    password1 = forms.CharField(widget=forms.PasswordInput, required=False)
+    password2 = forms.CharField(widget=forms.PasswordInput, required=False)
+
+
     class Meta:
         model = User
         fields = ('email', 'organisation', 'password1', 'password2', 'is_admin',)
@@ -34,7 +37,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'organisation', 'is_active', 'is_admin', 'first_name', 'last_name',)
+        fields = ('email', 'organisation', 'is_active', 'is_admin', 'first_name', 'last_name',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

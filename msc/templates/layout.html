@@ -80,6 +80,17 @@
     <nav class="mdc-list menu-list-bottom">
       <a
         class="mdc-list-item"
+        href="{% url 'password_change' %}"
+        aria-current="page"
+        tabindex="0"
+      >
+        <i class="material-icons mdc-list-item__graphic" aria-hidden="true"
+          >person</i
+        >
+        <span class="mdc-list-item__text">Change Password</span>
+      </a>
+      <a
+        class="mdc-list-item"
         href="/accounts/logout"
         aria-current="page"
         tabindex="0"

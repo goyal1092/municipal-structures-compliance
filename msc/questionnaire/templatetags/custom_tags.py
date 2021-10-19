@@ -7,8 +7,9 @@ from django.template.loader import get_template
 
 register = template.Library()
 
+
 @register.filter
-def keyvalue(dict, key):    
+def keyvalue(dict, key):
     try:
         return dict[key]
     except KeyError:
@@ -17,7 +18,6 @@ def keyvalue(dict, key):
 @register.filter
 def split_timeuntil(duration):
     return duration.split(",")[0]
-
 
 @register.filter
 def submitted_questionnaires(questionnaire, user):
@@ -58,3 +58,8 @@ def url_replace(request, field, value):
     dict_ = request.GET.copy()
     dict_[field] = value
     return dict_.urlencode()
+
+
+@register.filter
+def reminder_options(questionnaire, user):
+    return questionnaire.get_reminder_options(user)

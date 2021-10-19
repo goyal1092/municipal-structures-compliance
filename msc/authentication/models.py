@@ -5,7 +5,7 @@ from django.conf import settings
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from msc.questionnaire.models import MSCBase
+from msc.questionnaire.base import MSCBase
 
 
 class CustomUserManager(BaseUserManager):

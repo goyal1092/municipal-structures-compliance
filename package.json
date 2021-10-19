@@ -9,6 +9,7 @@
     "build": "mkdir -p assets/bundles/images/; cp assets/images/* assets/bundles/images; parcel build assets/css/msc.scss assets/js/msc.js --out-dir assets/bundles"
   },
   "dependencies": {
+    "axios": "^0.22.0",
     "parcel-bundler": "^1.12.5",
     "sass": "^1.25.1-test.1"
   }

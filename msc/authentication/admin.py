@@ -1,3 +1,6 @@
+import secrets
+import string
+
 from django.contrib import admin
 
 
@@ -12,6 +15,8 @@ from django.core.exceptions import ValidationError
 from .models import User, Share
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
+from msc.organisation.models import EmailActivity
+
 
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
@@ -22,7 +27,7 @@ class UserAdmin(BaseUserAdmin):
 
 
     change_fieldsets = (
-        (None, {'fields': ('email', 'password', 'organisation')}),
+        (None, {'fields': ('email', 'organisation')}),
         ("Personal info", {'fields': ('first_name', 'last_name',)}),
         ('Permissions', {'fields': ('is_admin', 'is_active')}),
     )
@@ -35,7 +40,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'organisation', 'password1', 'password2', 'is_admin'),
+            'fields': ('email', 'organisation', 'is_admin'),
         }),
     )
     search_fields = ('email',)
@@ -62,7 +67,6 @@ class UserAdmin(BaseUserAdmin):
         add_as_admin = form.cleaned_data.get("is_admin", False)
         obj.is_staff = add_as_admin or obj.is_superuser
 
-
         if "groups" in form.cleaned_data:
             if not obj.organisation or not add_as_admin:
                 form.cleaned_data["groups"] = []
@@ -85,7 +89,24 @@ class UserAdmin(BaseUserAdmin):
             elif not add_as_admin:
                 obj.groups.remove(group)
 
-        
+        if not change:
+            if settings.DEBUG:
+                password = "test1234"
+            else:
+                alphabet = string.ascii_letters + string.digits
+                password = ''.join(secrets.choice(alphabet) for i in range(15))
+            obj.set_password(password)
+            obj.username = obj.email.split("@")[0]
+            obj.save()
+
+            activity = EmailActivity.objects.create(
+                activity_type="account_activation", user=request.user
+            )
+            activity.to_users.add(obj)
+            activity.send_email(
+                request, password=password, email=obj.email, obj=obj
+            )
+
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
