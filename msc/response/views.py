@@ -90,7 +90,7 @@ def save_response(request, organisation, questionnaire, response_obj):
             if ques["obj"].input_type == "checkbox":
                 val = request.POST.getlist(ques["sno"], [])
             else:
-                val = request.POST.get(ques["sno"], "")
+                val = request.POST.get(ques["sno"], "").strip()
 
             is_valid, msg = save_question_response(val, ques, user, response_obj)
 
