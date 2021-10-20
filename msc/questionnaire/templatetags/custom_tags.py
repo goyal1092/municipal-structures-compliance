@@ -81,12 +81,13 @@ def question_summary(question, user):
         submitted_responses = questionnaire.response_set.filter(**response_filters)
         summary = question.get_summary_results(submitted_responses)
         per = "0%"
-        max_count = summary["max"]["count"]
-        total = summary["total_response_count"]
-        max_choice = summary["max"]["choice"]
         try:
+            max_count = summary["max"]["count"]
+            total = summary["total_response_count"]
+            max_choice = summary["max"]["choice"]
             per = round((float(max_count)/total)*100,1)
+            return f'{max_count}/{total} ({per}%) - {max_choice}'
         except:
             pass
-        return f'{max_count}/{total} ({per}%) - {max_choice}'
+        
     return "-"

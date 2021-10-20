@@ -80,7 +80,7 @@
       {% for response in page_obj.object_list %}
         <tr>
           <td>
-            <a href="{% url 'questionnaire-detail' response.questionnaire.id %}">
+            <a href="{% url 'form-submitted-response' response.questionnaire.id response.organisation.id %}">
               {{ response.questionnaire.name }}
             </a>
           </td>
