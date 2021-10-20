@@ -76,10 +76,10 @@
               <th width="10%" align="left">
                 sno
               </th>
-              <th width="70%" class="has-nowrap" align="left">
+              <th width="60%" class="has-nowrap" align="left">
                 Question
               </th>
-              <th width="20%" class="has-nowrap" align="left">
+              <th width="30%" class="has-nowrap" align="left">
                 Summary
               </th>
             </tr>
@@ -89,13 +89,13 @@
               <tr>
                 <td>{{ question.sno }}</td>
                 <td>{{ question.obj.text }}</td>
-                <td>-</td>
+                <td>{{ question.obj|question_summary:request.user }}</td>
               </tr>
               {% for sub_question in question.children %}
                 <tr>
                   <td>{{ sub_question.sno }}</td>
                   <td>{{ sub_question.obj.text }}</td>
-                  <td>-</td>
+                  <td>{{ sub_question.obj|question_summary:request.user }}</td>
                 </tr>
               {% endfor %}
             {% endfor %}

@@ -175,6 +175,36 @@ class Question(MSCBase):
                 elif options[validation_type] in [None, '', []]:
                     raise ValidationError( f"{validation['msg']}.Example: {validation['example']}")
 
+    def get_summary_results(self, responses):
+
+        qr_responses = []
+        for response in responses:
+            qr_response = response.questionresponse_set.filter(
+                question=self
+            ).order_by("-version").first()
+
+            if qr_response:
+                if self.input_type != "checkbox":
+                    qr_responses.append(qr_response.value)
+                else:
+                    qr_responses = qr_responses + qr_response.value
+
+        max_choice = max(qr_responses, key = qr_responses.count)
+
+        all_choices = {}
+        for choice in self.options.get("choices", []):
+            all_choices[choice] = qr_responses.count(choice)
+
+        return {
+            "total_response_count": len(responses),
+            "max": {
+                "choice":max_choice,
+                "count":qr_responses.count(max_choice),
+            },
+            "all": all_choices
+        }
+
+
 
 class QuestionLogic(MSCBase):
     action = models.CharField(max_length=32, choices=settings.LOGIC_ACTION)

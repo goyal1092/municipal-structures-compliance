@@ -4,6 +4,7 @@ from msc.organisation.models import Organisation
 from msc.authentication.models import Share
 
 from django.template.loader import get_template
+from django.conf import settings
 
 register = template.Library()
 
@@ -63,3 +64,29 @@ def url_replace(request, field, value):
 @register.filter
 def reminder_options(questionnaire, user):
     return questionnaire.get_reminder_options(user)
+
+
+@register.filter
+def question_summary(question, user):
+    if question.input_type in settings.SUMMARY_INPUT_TYPES:
+        questionnaire = question.section.questionnaire
+
+        response_filters = {"is_submitted": True}
+        if user.is_provincial:
+            child_organisations = user.organisation.get_children(
+                False
+            ).values_list("id", flat=True)
+            response_filters["organisation_id__in"] = child_organisations
+
+        submitted_responses = questionnaire.response_set.filter(**response_filters)
+        summary = question.get_summary_results(submitted_responses)
+        per = "0%"
+        max_count = summary["max"]["count"]
+        total = summary["total_response_count"]
+        max_choice = summary["max"]["choice"]
+        try:
+            per = round((float(max_count)/total)*100,1)
+        except:
+            pass
+        return f'{max_count}/{total} ({per}%) - {max_choice}'
+    return "-"
