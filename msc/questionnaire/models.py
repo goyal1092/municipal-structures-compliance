@@ -192,7 +192,13 @@ class Question(MSCBase):
                 else:
                     qr_responses = qr_responses + qr_response.value
 
-        max_choice = max(qr_responses, key = qr_responses.count)
+        max_data = {}
+        if qr_responses:
+            max_choice = max(qr_responses, key = qr_responses.count)
+            max_data =  {
+                "choice":max_choice,
+                "count":qr_responses.count(max_choice),
+            }
 
         all_choices = {}
         for choice in self.options.get("choices", []):
@@ -200,10 +206,7 @@ class Question(MSCBase):
 
         return {
             "total_response_count": len(responses),
-            "max": {
-                "choice":max_choice,
-                "count":qr_responses.count(max_choice),
-            },
+            "max": max_data,
             "all": all_choices
         }
 
