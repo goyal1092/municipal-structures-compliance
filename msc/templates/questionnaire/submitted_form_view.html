@@ -75,7 +75,13 @@
             <div>
               <p class="is-size-1-4">{{ question.obj.text }}</p>
               {% if question.response %}
-                <span class="bck-subm-response">{{question.response.value}}</span>
+                <span class="bck-subm-response">
+                  {% if question.obj.input_type == "checkbox" %}
+                    {{question.response.value|join:", "}}
+                  {% else %}
+                    {{question.response.value}}
+                  {% endif %}
+                </span>
               {% else %}
                 <span class="bck-subm-response">N/A</span>
               {% endif %}
@@ -90,7 +96,13 @@
               <div class="">
                 <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
                 {% if sub_question.response %}
-                  <span class="bck-subm-response">{{sub_question.response.value}}</span>
+                  <span class="bck-subm-response">
+                    {% if question.obj.input_type == "checkbox" %}
+                      {{sub_question.response.value|join:", "}}
+                    {% else %}
+                      {{sub_question.response.value}}
+                    {% endif %}
+                  </span>
                 {% else %}
                   <span class="bck-subm-response">N/A</span>
                 {% endif %}
