@@ -65,11 +65,13 @@ def submit_form(questionnaire, response):
                     parent_question_resposne = responses.filter(
                         question=parent.id
                     ).order_by("-version").first()
-
                     if (
                         ((logic.when == "parent" and parent_question_resposne) and
                         (not question_response or not question_response.value)) or
-                        ((logic.when == "parent_value" and parent_question_resposne.value == logic.values) and
+                        ((logic.when == "parent_value" and (
+                            parent_question_resposne.value == logic.values or 
+                            logic.values in parent_question_resposne.value
+                        )) and
                         (not question_response or not question_response.value))
                     ):
                         errors[question.id] = "This question is mandatory"
@@ -88,7 +90,7 @@ def save_response(request, organisation, questionnaire, response_obj):
             if ques["obj"].input_type == "checkbox":
                 val = request.POST.getlist(ques["sno"], [])
             else:
-                val = request.POST.get(ques["sno"], "")
+                val = request.POST.get(ques["sno"], "").strip()
 
             is_valid, msg = save_question_response(val, ques, user, response_obj)
 

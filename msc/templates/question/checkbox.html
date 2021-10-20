@@ -2,10 +2,13 @@
 <div class="mdc-form-field">
   <div class="mdc-checkbox">
     <input type="checkbox"
-           class="mdc-checkbox__native-control"
-           id="checkbox-{{question.id}}-{{forloop.counter}}"
-           name="{{ question.sno }}" 
-           {% if 'on' in question.response.value %} checked=checked {% endif %} />
+     class="mdc-checkbox__native-control"
+     id="checkbox-{{question.id}}-{{forloop.counter}}"
+     name="{{ question.sno }}" 
+     {% if choice in question.response.value %} checked=checked {% endif %}
+     value="{{choice}}"
+
+    />
     <div class="mdc-checkbox__background">
       <svg class="mdc-checkbox__checkmark"
            viewBox="0 0 24 24">

@@ -132,6 +132,7 @@
           <div class="my-2">
             <h3 class="mdc-typography--headline3">
               Question {{ question.sno }}
+
               {% if question.response %} 
                 <span class="is-pulled-right is-size-0-75">
                   <img class="is-vertical-align-middle mr-0-25" src="/static/images/answered.png" alt="{% if question.response.version == 1 %} Answered by {% elif question.response.version > 1 %} Answer updated by {% endif %}" />
@@ -169,8 +170,9 @@
               <div class="">
                 <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
                 <p>{{ sub_question.obj.instruction }}</p>
-                
-                {% include sub_question.template %} 
+                {% with question=sub_question %}
+                  {% include question.template %}
+                {% endwith %}
                 
                 {% if sub_question.sno in errors %}
                   <p class="text-danger">{{errors|keyvalue:sub_question.sno}}</p>
