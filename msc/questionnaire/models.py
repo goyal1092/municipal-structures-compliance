@@ -168,6 +168,9 @@ class Question(MSCBase):
         if "validations" not in options:
             options["validations"] = default["validations"]
 
+        if "placeholder" not in options:
+            options["placeholder"] = default["placeholder"]
+
         for validation_type, validation in settings.QUESTION_BUILDER_VALIDATIONS.items():
             if input_type in validation["fields"]:
                 if validation_type not in options:
