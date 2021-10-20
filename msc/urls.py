@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from django.contrib.auth import views as auth_views
-from .questionnaire.views import questionnaire_list, questionnaire_list_submitted, QuestionnaireDetail
+from .questionnaire.views import (
+    questionnaire_list, questionnaire_list_submitted,
+    QuestionnaireDetail, active_form_summary_view
+)
 from .organisation.views import login, send_reminder
 from .response.views import save_response
 
@@ -17,5 +20,6 @@ urlpatterns = [
     path('ckeditor', include('ckeditor_uploader.urls')),
     path("save-response/", save_response, name="save-response"),
     path("send_reminder/", send_reminder, name="send_reminder"),
+    path("forms/<int:pk>/summary", active_form_summary_view, name="form-summary"),
 ]
 

@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.views.generic import TemplateView
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import Http404
 
 from msc.questionnaire.models import Questionnaire
 from msc.organisation.models import Organisation, Group
@@ -207,3 +208,21 @@ class QuestionnaireDetail(TemplateView):
             "form_save_type": form_save_type
         })
         return render(request, 'questionnaire/questionnaire_form.html', context)
+
+
+@login_required
+@check_user_org
+def active_form_summary_view(request, pk):
+    user = request.user
+    organisation = user.organisation
+    questionnaire = get_object_or_404(Questionnaire, pk=pk)
+
+    if not user.is_national or user.is_provincial:
+        raise Http404
+
+    context = {
+        "questionnaire": questionnaire,
+        "sections": get_serialized_questioner(questionnaire, None),
+    }
+    return render(request, "questionnaire/active_form_summary_view.html", context)
+
