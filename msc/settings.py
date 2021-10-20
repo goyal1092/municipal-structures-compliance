@@ -251,6 +251,8 @@ EMAIL_ORG_USER_FILTER = (
     ("unsubmitted_$org_type", "Send to unsubmitted $org_type ($count)")
 )
 
+SUMMARY_INPUT_TYPES = ["radio", "checkbox", "dropdown"]
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 

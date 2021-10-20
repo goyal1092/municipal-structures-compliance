@@ -32,7 +32,7 @@
       {% for questionnaire in questionnaires %}
         <tr>
           <td>
-            <a href="{% url 'questionnaire-detail' questionnaire.id %}">
+            <a href="{% url 'form-summary' questionnaire.id %}">
               {{ questionnaire.name }}
             </a>
           </td>

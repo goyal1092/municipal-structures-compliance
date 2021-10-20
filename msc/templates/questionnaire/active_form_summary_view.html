@@ -1,0 +1,109 @@
+{% extends "layout.html" %} 
+{% load custom_tags %}
+{% load humanize %}
+{% block breadcrumbs %}
+<a href="{% url 'root' %}">Compliance forms</a>
+<a href="{% url 'questionnaire-detail' questionnaire.id %}">
+  {{ questionnaire.name }}
+</a>
+{% endblock %} 
+{% block content %}
+<main class="questionnaires">
+  <form
+      method="post"
+      action="{% url 'questionnaire-detail' questionnaire.id %}"
+    >
+      {% csrf_token %}
+      <input
+        type="hidden"
+        name="questionnaire_id"
+        value="{{questionnaire.id}}"
+      />
+  <nav class="mdc-layout-grid has-background-white is-top-minus-210px">
+    <div class="mdc-layout-grid__inner">
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+        <h1 title="{{ questionnaire.name }}" class="mdc-typography--headline1 has-nowrap has-overflow-ellipsis">
+          <i class="material-icons mdc-button__icon is-primary-tinted" aria-hidden="true">list_alt</i>
+          {{ questionnaire.name }}
+        </h1>
+      </div>
+    </div>
+  </nav>
+  <div class="is-breakout-full-width is-background-color-grey-light mt-1">
+    <div class="is-contained py-2">
+      <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+            <div class="mdc-card py-1 px-1 is-line-height-1-5">
+              <div>
+                <span class="is-bold">Response received:</span>
+                <br />
+                {{ questionnaire|submitted_questionnaires:request.user }}
+              </div>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+            <div class="mdc-card py-1 px-1 is-line-height-1-5">
+              <div>
+                <span class="is-bold">Submission deadline:</span>
+                <br />
+                <span>{{ questionnaire.close | date:'d/m/Y' }}</span>
+                <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince | split_timeuntil}}{%else%}{{questionnaire.close | timeuntil | split_timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+              </div>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+            <div class="mdc-card py-1 px-1 is-line-height-1-5">
+              <div>
+                <span class="is-bold">Date distributed:</span>
+                <br />
+                <span>{{ questionnaire.start | date:'d/m/Y' }}</span>
+                <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{{questionnaire.start | timesince | split_timeuntil}} ago</span>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+      {% for section in sections %}
+      <div class="mt-4">
+        <h2 class="mdc-typography--headline2">{{section.label}}</h2>
+        <table class="is-table-app py-1" style="width: 100%">
+          <thead>
+            <tr>
+              <th width="10%" align="left">
+                sno
+              </th>
+              <th width="60%" class="has-nowrap" align="left">
+                Question
+              </th>
+              <th width="30%" class="has-nowrap" align="left">
+                Summary
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for question in section.questions %}
+              <tr>
+                <td>{{ question.sno }}</td>
+                <td>{{ question.obj.text }}</td>
+                <td>{{ question.obj|question_summary:request.user }}</td>
+              </tr>
+              {% for sub_question in question.children %}
+                <tr>
+                  <td>{{ sub_question.sno }}</td>
+                  <td>{{ sub_question.obj.text }}</td>
+                  <td>{{ sub_question.obj|question_summary:request.user }}</td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endfor %}
+    </div>
+  </form>
+</main>
+{% endblock %}
