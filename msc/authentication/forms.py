@@ -14,13 +14,19 @@ class CustomUserCreationForm(UserCreationForm):
     fields, plus a repeated password."""
 
     is_admin = forms.BooleanField(required=False, initial=False, label='Add User as organisation Admin')
+    send_email = forms.BooleanField(required=False, initial=False, label='Send activation email to user')
     password1 = forms.CharField(widget=forms.PasswordInput, required=False)
     password2 = forms.CharField(widget=forms.PasswordInput, required=False)
 
-
     class Meta:
         model = User
-        fields = ('email', 'organisation', 'password1', 'password2', 'is_admin',)
+        fields = ('email', 'organisation', 'password1', 'password2', 'is_admin', 'send_email',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.current_user.is_superuser:
+            del self.fields['send_email']
+
 
     def clean(self):
         if self.cleaned_data['is_admin'] == True and self.cleaned_data['organisation'] is None:
