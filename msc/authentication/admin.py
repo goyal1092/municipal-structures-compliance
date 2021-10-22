@@ -41,7 +41,14 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'organisation', 'is_admin'),
+            'fields': ('email', 'organisation', 'is_admin',),
+        }),
+    )
+
+    super_user_add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'organisation', 'is_admin', 'send_email'),
         }),
     )
     search_fields = ('email',)
@@ -49,12 +56,22 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
     readonly_fields = ("is_staff",)
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj:
             if request.user.is_superuser:
                 return self.superuser_fieldsets
             return self.change_fieldsets
+
+        else:
+            if request.user.is_superuser:
+                return self.super_user_add_fieldsets
         return self.add_fieldsets
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -67,7 +84,7 @@ class UserAdmin(BaseUserAdmin):
     def save_model(self, request, obj, form, change):
         add_as_admin = form.cleaned_data.get("is_admin", False)
         obj.is_staff = add_as_admin or obj.is_superuser
-
+        send_email = form.cleaned_data.get("send_email", True)
         if "groups" in form.cleaned_data:
             if not obj.organisation or not add_as_admin:
                 form.cleaned_data["groups"] = []
@@ -90,7 +107,7 @@ class UserAdmin(BaseUserAdmin):
             elif not add_as_admin:
                 obj.groups.remove(group)
 
-        if not change:
+        if not change and send_email:
             alphabet = string.ascii_letters + string.digits
             password = ''.join(secrets.choice(alphabet) for i in range(15))
             obj.set_password(password)
