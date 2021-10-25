@@ -219,7 +219,7 @@ def active_form_summary_view(request, pk):
     organisation = user.organisation
     questionnaire = get_object_or_404(Questionnaire, pk=pk)
 
-    if not user.is_national or not user.is_provincial:
+    if not user.is_national and not user.is_provincial:
         raise Http404
 
     context = {
