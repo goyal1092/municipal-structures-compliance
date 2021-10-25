@@ -50,11 +50,24 @@ class Questionnaire(MSCBase):
         ).exists()
 
     def get_reminder_options(self, user):
-        shares = Share.objects.filter(
-            target_content_type__model="questionnaire",
-            sharer_content_type__model="organisation",
-            target_object_id=self.id
+        if not user.is_national and not user.is_provincial:
+            return []
+
+        children_ids = user.organisation.get_children(False).values_list(
+            "id", flat=True
         )
+
+        share_filters = {
+            "target_content_type__model": "questionnaire",
+            "sharer_content_type__model": "organisation",
+            "target_object_id":self.id,
+        }
+
+        if user.is_provincial:
+            share_filters["sharer_object_id__in"] = children_ids
+
+        shares = Share.objects.filter(**share_filters)
+
         provinces = [share.sharer for share in shares.filter(relationship="admin")]
         municipalities = [share.sharer for share in shares.filter(relationship="viewer")]
         responses = self.response_set.filter(is_submitted=True).values_list(

@@ -23,10 +23,6 @@
         <th class="has-nowrap" align="left">
           Completion
         </th>
-        {% if request.user.is_admin %}
-          <th class="has-nowrap" align="center">
-          </th>
-        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -47,24 +43,6 @@
                 <span class="is-tag is-success">Ready to submit</span>
               {% endif %}
             </td>
-            {% if request.user.is_admin %}
-              <td class="has-nowrap">
-                <button class="menu-button mdc-button"><i class="material-icons open-side-menu" aria-hidden="true">more_vert</i></button>
-                <div class="demo-menu mdc-menu-surface--anchor">
-                  <div class="mdc-menu mdc-menu-surface">
-                    <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical" tabindex="-1">
-                      <li class="mdc-list-item send_message" role="menuitem">
-                        <span class="mdc-list-item__ripple"></span>
-                        <span class="mdc-list-item__text"><i class="material-icons mdc-button__icon" aria-hidden="true">notifications</i>
-                          Send Reminder
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                {% include 'questionnaire/reminder_modal.html' %}
-              </td>
-            {% endif %}
           </tr>
       {% empty %}
         <tr><td>No Active forms for submission</td><td></td><td></td></tr>
