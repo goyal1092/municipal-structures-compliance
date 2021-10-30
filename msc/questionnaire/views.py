@@ -229,11 +229,21 @@ class QuestionnaireDetail(TemplateView):
 
             context["submission_errors"] = submission_errors
 
+        total_questions = questionnaire.question_count
+        response_count = questionnaire.question_response_count(request.user)
+        perc = 0.0
+
+        if total_questions > 0:
+            perc = round((float(response_count)/total_questions)*100,1)
+
         context.update({
             "questionnaire": questionnaire,
             "errors": validation_errors,
             "sections": get_serialized_questioner(questionnaire, organisation),
-            "form_save_type": form_save_type
+            "form_save_type": form_save_type,
+            "response_count": response_count,
+            "total_questions": total_questions,
+            "per_completed": perc
         })
         return render(request, 'questionnaire/questionnaire_form.html', context)
 
