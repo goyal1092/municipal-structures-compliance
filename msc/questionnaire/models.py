@@ -49,6 +49,21 @@ class Questionnaire(MSCBase):
             is_submitted=True
         ).exists()
 
+    def question_response_count(self, user):
+        response_count = 0
+        questions = Question.objects.filter(
+            section__questionnaire=self
+        )
+        for question in questions:
+            response = question.questionresponse_set.filter(
+                response__organisation=user.organisation
+            ).order_by("-version").first()
+
+            if response and response.is_valid:
+                response_count = response_count + 1
+
+        return response_count
+
     def get_reminder_options(self, user):
         shares = Share.objects.filter(
             target_content_type__model="questionnaire",

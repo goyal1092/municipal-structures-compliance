@@ -43,9 +43,25 @@ def questionnaire_list(request):
 
 
     questionnaires = Questionnaire.objects.filter(**filters)
-    questionnaires = [q for q in questionnaires if not q.is_submitted(request.user.organisation)]
+    questionnaire_list = []
+
+    for questionnaire in questionnaires:
+        if not questionnaire.is_submitted(request.user.organisation):
+            total_questions = questionnaire.question_count
+            response_count = questionnaire.question_response_count(request.user)
+            perc = 0.0
+
+            if total_questions > 0:
+                perc = round((float(response_count)/total_questions)*100,1)
+            questionnaire_list.append({
+                "obj": questionnaire,
+                "response_count": response_count,
+                "total_questions": total_questions,
+                "per_completed": perc
+            })
+
     context = {
-        "questionnaires": questionnaires
+        "questionnaires": questionnaire_list
     }
 
     template_name = 'questionnaire/list.html'
@@ -168,9 +184,19 @@ class QuestionnaireDetail(TemplateView):
         pk = kwargs.get("pk", None)
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
         organisation = request.user.organisation
+
+        total_questions = questionnaire.question_count
+        response_count = questionnaire.question_response_count(request.user)
+        perc = 0.0
+
+        if total_questions > 0:
+            perc = round((float(response_count)/total_questions)*100,1)
         context = {
             "questionnaire": questionnaire,
-            "sections": get_serialized_questioner(questionnaire, organisation)
+            "sections": get_serialized_questioner(questionnaire, organisation),
+            "response_count": response_count,
+            "total_questions": total_questions,
+            "per_completed": perc
         }
         return render(request, 'questionnaire/questionnaire_form.html', context)
 

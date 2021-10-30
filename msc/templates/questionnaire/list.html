@@ -33,17 +33,17 @@
       {% for questionnaire in questionnaires %}
           <tr>
             <td>
-              <a href="{% url 'questionnaire-detail' questionnaire.id %}">
-                {{ questionnaire.name }}
+              <a href="{% url 'questionnaire-detail' questionnaire.obj.id %}">
+                {{ questionnaire.obj.name }}
               </a>
             </td>
             <td class="has-nowrap">
-              {{ questionnaire.close |date:'d/m/Y' }}
-              <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+              {{ questionnaire.obj.close |date:'d/m/Y' }}
+              <span class="is-tag {% if questionnaire.obj.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.obj.overdue %}{{questionnaire.obj.close | timesince}}{%else%}{{questionnaire.obj.close | timeuntil}}{% endif %} {% if questionnaire.obj.overdue %}overdue{% else %}left{% endif %}</span>
             </td>
             <td class="has-nowrap">
-              {{ questionnaire.response_count }}/{{ questionnaire.question_count }}
-              {% if questionnaire.response_count == questionnaire.question_count %}
+              {{ questionnaire.response_count }}/{{ questionnaire.total_questions }}
+              {% if questionnaire.response_count == questionnaire.total_questions %}
                 <span class="is-tag is-success">Ready to submit</span>
               {% endif %}
             </td>

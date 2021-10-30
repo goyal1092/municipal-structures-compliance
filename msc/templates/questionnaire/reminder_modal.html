@@ -19,11 +19,11 @@
         <form method="POST" class="reminder_form" action="{% url 'send_reminder' %}">
           {% csrf_token %}
           <div class="mdc-dialog__content">
-              <input type="hidden" name="questionnaire_id" value="{{ questionnaire.id }}">
+              <input type="hidden" name="questionnaire_id" value="{{ questionnaire.obj.id }}">
             <label>
               Send reminder to:
               <select class="dropdown-fullwidth form-control" id="exampleFormControlSelect1" name="selected_option" required="required">
-                {% for val in questionnaire|reminder_options:request.user %}
+                {% for val in questionnaire.obj|reminder_options:request.user %}
                   <option value="{{ val.name }}"  {% if val.count == 0 %} disabled="disabled" {% endif %}>{{ val.text }}</option>
                 {% endfor %}
               </select>

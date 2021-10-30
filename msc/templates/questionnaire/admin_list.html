@@ -32,16 +32,16 @@
       {% for questionnaire in questionnaires %}
         <tr>
           <td>
-            <a href="{% url 'form-summary' questionnaire.id %}">
-              {{ questionnaire.name }}
+            <a href="{% url 'form-summary' questionnaire.obj.id %}">
+              {{ questionnaire.obj.name }}
             </a>
           </td>
           <td class="has-nowrap">
-            {{ questionnaire.close |date:'d/m/Y' }}
-            <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.overdue %}{{questionnaire.close | timesince}}{%else%}{{questionnaire.close | timeuntil}}{% endif %} {% if questionnaire.overdue %}overdue{% else %}left{% endif %}</span>
+            {{ questionnaire.obj.close |date:'d/m/Y' }}
+            <span class="is-tag {% if questionnaire.overdue %}is-danger{%else%}is-light{% endif %}">{% if questionnaire.obj.overdue %}{{questionnaire.obj.close | timesince}}{%else%}{{questionnaire.obj.close | timeuntil}}{% endif %} {% if questionnaire.obj.overdue %}overdue{% else %}left{% endif %}</span>
           </td>
           <td class="has-nowrap">
-            {{ questionnaire|submitted_questionnaires:request.user }}
+            {{ questionnaire.obj|submitted_questionnaires:request.user }}
           </td>
           <td class="has-nowrap">
             <button class="menu-button mdc-button"><i class="material-icons open-side-menu" aria-hidden="true">more_vert</i></button>
