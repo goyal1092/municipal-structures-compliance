@@ -61,9 +61,9 @@
                 <span class="is-bold">Questions answered:</span>
                 <br />
                 <span class="is-bar-background">
-                  <span class="is-bar" style="width: {{ questionnaire.question_response_percentage | floatformat:0 }}%;">
+                  <span class="is-bar" style="width: {{ per_completed }}%;">
                     <span class="is-bar-text has-nowrap">
-                      {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                      {{ response_count }}/{{ total_questions }} ({{ per_completed }}%)
                     </span>
                   </span>
                 </span>
