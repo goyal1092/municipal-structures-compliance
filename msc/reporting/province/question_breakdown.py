@@ -66,6 +66,8 @@ class QuestionBreakdown(ReportingBase):
                 row,  col, 
                 org.name, cell_format
             )
+            if isinstance(response, list):
+                response = ",".join(response)
             worksheet.write(
                 row,  col+1, 
                 response, cell_format

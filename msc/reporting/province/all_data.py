@@ -79,6 +79,8 @@ class AllData(ReportingBase):
             col = 1
             for question in questions:
                 response = question["responses"].get(org.id , "-")
+                if isinstance(response, list):
+                    response = ",".join(response)
                 worksheet.write(row, col, response, cell_format)
                 col = col + 1
             row = row + 1
