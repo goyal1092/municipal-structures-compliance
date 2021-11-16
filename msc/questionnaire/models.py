@@ -49,14 +49,14 @@ class Questionnaire(MSCBase):
             is_submitted=True
         ).exists()
 
-    def question_response_count(self, user):
+    def question_response_count(self, organisation):
         response_count = 0
         questions = Question.objects.filter(
             section__questionnaire=self
         )
         for question in questions:
             response = question.questionresponse_set.filter(
-                response__organisation=user.organisation
+                response__organisation=organisation
             ).order_by("-version").first()
 
             if response and response.is_valid:

@@ -8,6 +8,7 @@ from .questionnaire.views import (
 )
 from .organisation.views import login, send_reminder
 from .response.views import save_response
+from .reporting.views import download_report
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -22,5 +23,6 @@ urlpatterns = [
     path("send_reminder/", send_reminder, name="send_reminder"),
     path("forms/<int:pk>/summary", active_form_summary_view, name="form-summary"),
     path("forms/submitted/<int:questionnaire_id>/<int:organisation_id>/", submited_form_view, name="form-submitted-response"),
+    path("download/report/<int:questionnaire_id>/", download_report, name="download-report"),
 ]
 
