@@ -31,7 +31,7 @@ def create_excel(
     all_data = AllData()
     all_data_page = all_data.create_sheet(workbook, 'Copy of All Data')
 
-    all_data.format(workbook, all_data_page, compiled_data, list(list(complied_yes)+list(complied_no)))
+    all_data.format(workbook, all_data_page, compiled_data, all_orgs)
     cover.add_link(workbook, cover_page, 6, 0, "Copy of All Data")
 
     # Compliance Overview Tab
@@ -115,7 +115,7 @@ def download_report(request, questionnaire_id):
                 responses = question["obj"].questionresponse_set.filter(
                     response__in=survey_responses
                 ).values(
-                    "response__organisation__id", "value"
+                    "response__organisation_id", "value"
                 )
 
                 responses = {x["response__organisation_id"]: x["value"] for x in responses}
@@ -134,7 +134,7 @@ def download_report(request, questionnaire_id):
                     responses = child["obj"].questionresponse_set.filter(
                         response__in=survey_responses
                     ).values(
-                        "response__organisation__id", "value"
+                        "response__organisation_id", "value"
                     )
 
                     responses = {x["response__organisation_id"]: x["value"] for x in responses}
