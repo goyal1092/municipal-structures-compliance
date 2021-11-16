@@ -54,6 +54,21 @@
                       Send Reminder
                     </span>
                   </li>
+
+                  {% if request.user.organisation.is_provincial %}
+                  <li class="mdc-list-item" role="menuitem">
+                        <span class="mdc-list-item__ripple"></span>
+                        <form method="POST" action="{% url 'download-report' questionnaire.obj.id %}" name="report_{{questionnaire.obj.id}}">
+                          {% csrf_token %}
+                        <span class="mdc-list-item__text">
+                          <span class="mdc-list-item__text" onclick="document.forms['report_{{questionnaire.obj.id}}'].submit();">
+                            <i class="material-icons mdc-button__icon" aria-hidden="true">download</i>
+                            Download Report
+                          </span>
+                        </span>
+                      </form>
+                  </li>
+                  {% endif %}
                 </ul>
               </div>
             </div>

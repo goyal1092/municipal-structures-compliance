@@ -48,7 +48,7 @@ def questionnaire_list(request):
     for questionnaire in questionnaires:
         if not questionnaire.is_submitted(request.user.organisation):
             total_questions = questionnaire.question_count
-            response_count = questionnaire.question_response_count(request.user)
+            response_count = questionnaire.question_response_count(request.user.organisation)
             perc = 0.0
 
             if total_questions > 0:
@@ -186,7 +186,7 @@ class QuestionnaireDetail(TemplateView):
         organisation = request.user.organisation
 
         total_questions = questionnaire.question_count
-        response_count = questionnaire.question_response_count(request.user)
+        response_count = questionnaire.question_response_count(request.user.organisation)
         perc = 0.0
 
         if total_questions > 0:
@@ -230,7 +230,7 @@ class QuestionnaireDetail(TemplateView):
             context["submission_errors"] = submission_errors
 
         total_questions = questionnaire.question_count
-        response_count = questionnaire.question_response_count(request.user)
+        response_count = questionnaire.question_response_count(request.user.organisation)
         perc = 0.0
 
         if total_questions > 0:

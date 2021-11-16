@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "msc.questionnaire",
     "msc.response",
     "msc.organisation",
+    "msc.reporting",
     "msc.authentication",
     "django.contrib.humanize",
     "ckeditor",
