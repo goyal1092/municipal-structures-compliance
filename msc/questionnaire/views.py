@@ -276,13 +276,20 @@ def submited_form_view(request, questionnaire_id, organisation_id):
         if user.organisation not in organisations:
             raise Http404
 
-
+    response = Response.objects.filter(
+        organisation=organisation, questionnaire=questionnaire
+    ).first()
+    total_questions = questionnaire.question_count
+    qr_responses = response.questionresponse_set.filter(
+        question__parent__isnull=True
+    ).count()
     context = {
         "questionnaire": questionnaire,
         "sections": get_serialized_questioner(questionnaire, organisation),
         "organisation": organisation,
-        "response": Response.objects.filter(
-            organisation=organisation, questionnaire=questionnaire
-        ).first()
+        "response": response,
+        "total_questions_count": total_questions,
+        "qr_responses_count": qr_responses,
+        "perc_completed":  (float(qr_responses)/total_questions)*100,
     }
     return render(request, 'questionnaire/submitted_form_view.html', context)

@@ -208,7 +208,7 @@ class Question(MSCBase):
         for response in responses:
             qr_response = response.questionresponse_set.filter(
                 question=self
-            ).order_by("-version").first()
+            ).first()
 
             if qr_response:
                 if self.input_type != "checkbox":
