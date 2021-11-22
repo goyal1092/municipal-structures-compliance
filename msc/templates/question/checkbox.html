@@ -4,7 +4,7 @@
     <input type="checkbox"
      class="mdc-checkbox__native-control"
      id="checkbox-{{question.id}}-{{forloop.counter}}"
-     name="{{ question.sno }}" 
+     name="{{ question.obj.get_key }}" 
      {% if choice in question.response.value %} checked=checked {% endif %}
      value="{{choice}}"
 

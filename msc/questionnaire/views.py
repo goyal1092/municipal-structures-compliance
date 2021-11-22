@@ -200,34 +200,33 @@ class QuestionnaireDetail(TemplateView):
         }
         return render(request, 'questionnaire/questionnaire_form.html', context)
 
+
     def post(self, request, *args, **kwargs):
+
         pk = kwargs.get("pk", None)
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
         organisation = request.user.organisation
+        context = {}
 
         response, created = Response.objects.get_or_create(
             questionnaire=questionnaire, organisation=organisation
         )
+
         form_save_type = "save"
-        if response.is_submitted:
-            response.is_submitted = False
-            response.save()
+        if not response.is_submitted:
+            is_submitted = request.POST.get("submit_form", None) == "submit"
+            validation_errors = save_response(request, questionnaire, response)
 
-        is_submitted = request.POST.get("submit_form", None) == "submit"
-        context = {}
+            if is_submitted:
+                form_save_type = "submission"
+                submission_errors = submit_form(questionnaire, response)
+                if not submission_errors and not validation_errors:
+                    response.is_submitted = True
+                    response.save()
+                    messages.success(request, f"Submitted {questionnaire.name} form successfully" )
+                    return redirect("forms-submitted")
 
-        validation_errors = save_response(
-            request, organisation, questionnaire, response)
-        if is_submitted:
-            form_save_type = "submission"
-            submission_errors = submit_form(questionnaire, response)
-            if not submission_errors and not validation_errors:
-                response.is_submitted = True
-                response.save()
-                messages.success(request, f"Submitted {questionnaire.name} form successfully" )
-                return redirect("forms-submitted")
-
-            context["submission_errors"] = submission_errors
+                context["submission_errors"] = submission_errors
 
         total_questions = questionnaire.question_count
         response_count = questionnaire.question_response_count(request.user.organisation)

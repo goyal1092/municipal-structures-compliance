@@ -4,7 +4,7 @@
     <span class="mdc-notched-outline__trailing"></span>
   </span>
   <span class="mdc-text-field__resizer">
-    <textarea class="mdc-text-field__input" id="exampleFormControlTextarea1" rows="4" name="{{ question.sno }}">{% if question.response %}{{ question.response.value }} {% endif %}</textarea>
+    <textarea class="mdc-text-field__input" id="exampleFormControlTextarea1" rows="4" name="{{ question.obj.get_key }}">{% if question.response %}{{ question.response.value }} {% endif %}</textarea>
   </span>
 </label>
 {% if not question.response.obj.is_valid and question.response.msg %}

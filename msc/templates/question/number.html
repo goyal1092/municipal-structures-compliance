@@ -14,7 +14,7 @@
     class="mdc-text-field__input"
     type="number"
     aria-label="Label"
-    name="{{ question.sno }}"
+    name="{{ question.obj.get_key }}"
     value="{{question.response.value}}"
     min="{{ question.obj.options.validations.min }}"
     max="{{ question.obj.options.validations.max }}"

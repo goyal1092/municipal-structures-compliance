@@ -140,13 +140,13 @@
                 </span>
               {% endif %}
             </h3>
-            <div>
+            <div class="parent_question">
               <p class="is-size-1-4">{{ question.obj.text }}</p>
               {% autoescape off %}
                 {{ question.obj.instruction }}
               {% endautoescape %}
-              {% include question.template %} {% if question.sno in errors %}
-              <p class="text-danger">{{errors|keyvalue:question.sno}}</p>
+              {% include question.template %} {% if question.obj.get_key in errors %}
+              <p class="text-danger">{{errors|keyvalue:question.obj.get_key}}</p>
               {% endif %} 
               {% if question.obj.id in submission_errors %}
                 <p class="text-danger">
@@ -155,35 +155,37 @@
               {% endif %}
             </div>
             
-            <div>
+            <div class="subquestion-list ml-2">
               {% for sub_question in question.children %}
-              <h4 class="mdc-typography--headline4">
-                Question {{ sub_question.sno }}
-                {% if sub_question.response %} 
-                  <span class="is-pulled-right is-size-0-75">
-                    <img class="is-vertical-align-middle mr-0-25" src="/static/images/answered.png" alt="{% if sub_question.response.version == 1 %} Answered by {% elif sub_question.response.version > 1 %} Answer updated by {% endif %}" />
-                    {{ sub_question.response.respondent.email }} 
-                  </span>
-                {% endif %}
-              </h4>
+                <div class="subquestion {% if sub_question.logic.active %} {% if sub_question.logic.when == 'any' or sub_question.logic.when == question.response.value %}  mdc-show {% else %} mdc-hide {% endif %} {% endif %}"  data-logic="{{sub_question.logic.active}}" data-when="{{sub_question.logic.when}}">
+                  <h4 class="mdc-typography--headline4">
+                    Question {{ sub_question.sno }}
+                    {% if sub_question.response %} 
+                      <span class="is-pulled-right is-size-0-75">
+                        <img class="is-vertical-align-middle mr-0-25" src="/static/images/answered.png" alt="{% if sub_question.response.version == 1 %} Answered by {% elif sub_question.response.version > 1 %} Answer updated by {% endif %}" />
+                        {{ sub_question.response.respondent.email }} 
+                      </span>
+                    {% endif %}
+                  </h4>
 
-              <div class="">
-                <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
-                <p>{{ sub_question.obj.instruction }}</p>
-                {% with question=sub_question %}
-                  {% include question.template %}
-                {% endwith %}
-                
-                {% if sub_question.sno in errors %}
-                  <p class="text-danger">{{errors|keyvalue:sub_question.sno}}</p>
-                {% endif %} 
-                
-                {% if sub_question.obj.id in submission_errors %}
-                  <p class="text-danger">
-                    {{submission_errors|keyvalue:sub_question.obj.id}}
-                  </p>
-                {% endif %}
-              </div>
+                  <div class="">
+                    <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
+                    <p>{{ sub_question.obj.instruction }}</p>
+                    {% with question=sub_question %}
+                      {% include question.template %}
+                    {% endwith %}
+                    
+                    {% if sub_question.obj.get_key in errors %}
+                      <p class="text-danger">{{errors|keyvalue:sub_question.obj.get_key}}</p>
+                    {% endif %} 
+                    
+                    {% if sub_question.obj.id in submission_errors %}
+                      <p class="text-danger">
+                        {{submission_errors|keyvalue:sub_question.obj.id}}
+                      </p>
+                    {% endif %}
+                  </div>
+                </div>
               {% endfor %}
             </div>
           </div>

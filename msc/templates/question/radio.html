@@ -1,7 +1,7 @@
 {% for choice in question.obj.options.choices %}
   <div class="mdc-form-field">
     <div class="mdc-radio">
-      <input class="mdc-radio__native-control" type="radio" id="radio-{{question.id}}-{{forloop.counter}}" name="{{ question.sno }}" value="{{choice}}" {% if question.response.value == choice %} checked {% endif %}>
+      <input class="mdc-radio__native-control" type="radio" id="radio-{{question.id}}-{{forloop.counter}}" name="{{ question.obj.get_key }}" value="{{choice}}" {% if question.response.value == choice %} checked {% endif %}>
       <div class="mdc-radio__background">
         <div class="mdc-radio__outer-circle"></div>
         <div class="mdc-radio__inner-circle"></div>

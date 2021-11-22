@@ -14,7 +14,7 @@
     class="mdc-text-field__input"
     type="text"
     aria-label="Label"
-    name="{{ question.sno }}"
+    name="{{ question.obj.get_key }}"
     value="{% if question.response %}{{question.response.value}} {% endif %}"
   />
 </label>
