@@ -30,7 +30,3 @@ class QuestionResponse(MSCBase):
 
     def __str__(self):
         return f"{self.respondent.email} -> {self.response.organisation} -> {self.question.name}"
-
-    def validate(self):
-        validation = ValidateQuestionResponse()
-        return validation.run_validation(self.question, self.value)

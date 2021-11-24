@@ -30,7 +30,9 @@ class Questionnaire(MSCBase):
 
     @property
     def question_count(self):
-        return Question.objects.filter(section__questionnaire=self).count()
+        return Question.objects.filter(
+            section__questionnaire=self, parent__isnull=True
+        ).count()
     
     @property
     def question_response_percentage(self):
@@ -42,6 +44,15 @@ class Questionnaire(MSCBase):
     @property
     def overdue(self):
         return self.close < timezone.now()
+
+    def get_questions(self, include_child=False):
+        q = {
+            "section__questionnaire_id": self.id
+        }
+        if not include_child:
+            q["parent__isnull"] = True
+        
+        return  Question.objects.filter(**q)
 
     def is_submitted(self, organisation):
         return self.response_set.filter(
@@ -182,29 +193,14 @@ class Question(MSCBase):
     def __str__(self):
         return f"{self.section.label} -> {self.name}"
 
-    def clean(self):
-        input_type = self.input_type
-        options = self.options
-        default = settings.DEFAULT_INPUT_OPTIONS.get(input_type, None)
+    @property
+    def get_key(self):
+        return f'{self.section_id}_{self.id}'
 
-        if not input_type:
-            raise ValidationError( "input type not found" )
-
-        if "response_type" not in options:
-            options["response_type"] = default["response_type"]
-
-        if "validations" not in options:
-            options["validations"] = default["validations"]
-
-        if "placeholder" not in options:
-            options["placeholder"] = default["placeholder"]
-
-        for validation_type, validation in settings.QUESTION_BUILDER_VALIDATIONS.items():
-            if input_type in validation["fields"]:
-                if validation_type not in options:
-                    raise ValidationError( f"{validation_type} are required for {input_type} question type. Example: {validation['example']}")
-                elif options[validation_type] in [None, '', []]:
-                    raise ValidationError( f"{validation['msg']}.Example: {validation['example']}")
+    def get_child_questions(self):
+        return Question.objects.filter(
+            parent=self
+        )
 
     def get_summary_results(self, responses):
 
@@ -212,7 +208,7 @@ class Question(MSCBase):
         for response in responses:
             qr_response = response.questionresponse_set.filter(
                 question=self
-            ).order_by("-version").first()
+            ).first()
 
             if qr_response:
                 if self.input_type != "checkbox":

@@ -91,3 +91,41 @@ if (reminderForms){
     });
   });
 }
+
+document.querySelectorAll('.parent_question input').forEach(item => {
+  item.addEventListener('change', event => {
+    checkForLogicImplementation(item);
+  })
+});
+
+document.querySelectorAll('.parent_question select').forEach(item => {
+  item.addEventListener('change', event => {
+    checkForLogicImplementation(item);
+  })
+});
+
+document.querySelectorAll('.parent_question textarea').forEach(item => {
+  item.addEventListener('change', event => {
+    checkForLogicImplementation(item);
+  })
+});
+
+function checkForLogicImplementation (item){
+  let parent = item.closest(".parent_question").parentElement;
+  let itemVal = item.value;
+
+  parent.querySelectorAll('.subquestion').forEach(subquestion => {
+    var isLogicActive = subquestion.getAttribute('data-logic');
+
+    if(isLogicActive === "True"){
+      var showLogicWhen = subquestion.getAttribute('data-when');
+      if(showLogicWhen === "any" ||  showLogicWhen === itemVal){
+        subquestion.classList.remove("mdc-hide");
+        subquestion.classList.add("mdc-show");
+      } else {
+          subquestion.classList.remove("mdc-show");
+          subquestion.classList.add("mdc-hide");
+      }
+    }
+  });
+}

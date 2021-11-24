@@ -200,34 +200,33 @@ class QuestionnaireDetail(TemplateView):
         }
         return render(request, 'questionnaire/questionnaire_form.html', context)
 
+
     def post(self, request, *args, **kwargs):
+
         pk = kwargs.get("pk", None)
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
         organisation = request.user.organisation
+        context = {}
 
         response, created = Response.objects.get_or_create(
             questionnaire=questionnaire, organisation=organisation
         )
+
         form_save_type = "save"
-        if response.is_submitted:
-            response.is_submitted = False
-            response.save()
+        if not response.is_submitted:
+            is_submitted = request.POST.get("submit_form", None) == "submit"
+            validation_errors = save_response(request, questionnaire, response)
 
-        is_submitted = request.POST.get("submit_form", None) == "submit"
-        context = {}
+            if is_submitted:
+                form_save_type = "submission"
+                submission_errors = submit_form(questionnaire, response)
+                if not submission_errors and not validation_errors:
+                    response.is_submitted = True
+                    response.save()
+                    messages.success(request, f"Submitted {questionnaire.name} form successfully" )
+                    return redirect("forms-submitted")
 
-        validation_errors = save_response(
-            request, organisation, questionnaire, response)
-        if is_submitted:
-            form_save_type = "submission"
-            submission_errors = submit_form(questionnaire, response)
-            if not submission_errors and not validation_errors:
-                response.is_submitted = True
-                response.save()
-                messages.success(request, f"Submitted {questionnaire.name} form successfully" )
-                return redirect("forms-submitted")
-
-            context["submission_errors"] = submission_errors
+                context["submission_errors"] = submission_errors
 
         total_questions = questionnaire.question_count
         response_count = questionnaire.question_response_count(request.user.organisation)
@@ -277,13 +276,20 @@ def submited_form_view(request, questionnaire_id, organisation_id):
         if user.organisation not in organisations:
             raise Http404
 
-
+    response = Response.objects.filter(
+        organisation=organisation, questionnaire=questionnaire
+    ).first()
+    total_questions = questionnaire.question_count
+    qr_responses = response.questionresponse_set.filter(
+        question__parent__isnull=True
+    ).count()
     context = {
         "questionnaire": questionnaire,
         "sections": get_serialized_questioner(questionnaire, organisation),
         "organisation": organisation,
-        "response": Response.objects.filter(
-            organisation=organisation, questionnaire=questionnaire
-        ).first()
+        "response": response,
+        "total_questions_count": total_questions,
+        "qr_responses_count": qr_responses,
+        "perc_completed":  (float(qr_responses)/total_questions)*100,
     }
     return render(request, 'questionnaire/submitted_form_view.html', context)

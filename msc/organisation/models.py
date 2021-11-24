@@ -95,7 +95,6 @@ class EmailActivity(MSCBase):
     def send_email(self, request, **kwargs):
         context = self.get_context(kwargs)
         subject = self.get_subject()
-        print(settings.DEFAULT_FROM_EMAIL)
         from_address = settings.DEFAULT_FROM_EMAIL
         protocol = "https://" if request.is_secure() else "http://"
         context.update({

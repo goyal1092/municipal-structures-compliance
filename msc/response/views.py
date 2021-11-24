@@ -3,108 +3,136 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .models import Response, QuestionResponse
+from .utils import validate_question_response
+
 from msc.organisation.models import Organisation
 from msc.questionnaire.models import Questionnaire, Question
-from msc.questionnaire.utils import get_serialized_questioner
 
-
-def save_question_response(
-        value, question, user, response
-    ):
-    qr_response = question["response"]
-    version = 0
-    response_val = ""
-    if qr_response:
-        version = qr_response.version
-        response_val = qr_response.value
-
-    version += 1
-    qr_response = QuestionResponse(
-        respondent=user,
-        response=response,
-        question_id=question["obj"].id,
-        value=value,
-        version=version,
-    )
-
-    validation = qr_response.validate()
-    qr_response.is_valid = validation["is_valid"]
-    qr_response.value = validation["response"]
-
-    save_response = True
-
-    if version == 1 and not validation["response"]:
-        save_response = False
-    if version > 1 and (response_val == qr_response.value):
-        save_response = False
-
-    if save_response:
-        qr_response.save()
-
-    return validation["is_valid"],  validation["msg"]
 
 def submit_form(questionnaire, response):
     errors = {}
+    questions = questionnaire.get_questions(False)
     responses = response.questionresponse_set.filter(is_valid=True)
-    questions = Question.objects.filter(section__questionnaire=questionnaire)
+
     for question in questions:
-        question_response = responses.filter(
-            question=question.id
-        ).order_by("-version").first()
-        if (
-            (not question_response and question.is_mandatory) or
-            (question_response and not question_response.value)
-        ):
+        response = responses.filter(question=question).first()
+        if question.is_mandatory and not response:
             errors[question.id] = "This question is mandatory"
+            continue
 
-        
-        if question.id not in errors:
-            for logic in question.questionlogic_set.all():
-                if logic.action == "make_required" and "parent" in logic.when:
-                    parent = question.parent
-                    parent_question_resposne = responses.filter(
-                        question=parent.id
-                    ).order_by("-version").first()
-                    if (
-                        ((logic.when == "parent" and parent_question_resposne) and
-                        (not question_response or not question_response.value)) or
-                        ((logic.when == "parent_value" and (
-                            parent_question_resposne.value == logic.values or 
-                            logic.values in parent_question_resposne.value
-                        )) and
-                        (not question_response or not question_response.value))
-                    ):
-                        errors[question.id] = "This question is mandatory"
+        child_questions = question.get_child_questions()
+        for child in child_questions:
+            logic = child.questionlogic_set.first()
+            if logic:
+                child_qr = responses.filter(question=child).exists()
+                if logic.when == "parent_value" and logic.values == response.value and not child_qr:
+                    errors[child.id] = "This question is mandatory"
+                elif logic.when == "parent" and not child_qr:
+                    errors[child.id] = "This question is mandatory"
+    return  errors
 
-    return errors
+def get_response_val(request, question_key, input_type):
+    val = None
+    if input_type == "checkbox":
+        val = request.POST.getlist(question_key, None)
+    else:
+        val = request.POST.get(question_key, None)
+        if val:
+            val = val.strip()
 
+    return val
 
-def save_response(request, organisation, questionnaire, response_obj):
+def save_response(request, questionnaire, response_obj):
     user = request.user
     validation_errors = {}
-    sections = get_serialized_questioner(questionnaire, organisation)
 
-    for section in sections:
-        for ques in section["questions"]:
-            val = ""
-            if ques["obj"].input_type == "checkbox":
-                val = request.POST.getlist(ques["sno"], [])
-            else:
-                val = request.POST.get(ques["sno"], "").strip()
+    questions = questionnaire.get_questions()
 
-            is_valid, msg = save_question_response(val, ques, user, response_obj)
+    for question in questions:
+        # question key
+        question_key = question.get_key
+        child_questions = question.get_child_questions()
 
-            if not is_valid:
-                validation_errors[ques["sno"]] = msg
+        val = get_response_val(request, question_key, question.input_type)
+        if not val:
+            # Delete Responses linked to this question
+            question_ids = list(
+                child_questions.values_list("id", flat=True)
+            ) + [question.id]
+            QuestionResponse.objects.filter(
+                response=response_obj,
+                question_id__in=question_ids
+            ).delete()
+            continue
 
-            if ques["children"]:
-                for child in ques["children"]:
-                    val = ""
-                    if child["obj"].input_type == "checkbox":
-                        val = request.POST.getlist(child["sno"], "")
-                    else:
-                        val = request.POST.get(child["sno"], "")
-                    is_valid, msg = save_question_response(val, child, user, response_obj)
+        # Validate question response
+        is_valid, msg, value = validate_question_response(
+            question, val
+        )
+
+        if not is_valid:
+            validation_errors[question_key] = msg
+            continue
+
+        qr_response = QuestionResponse.objects.filter(
+            response=response_obj, question=question
+        ).first()
+
+        if not qr_response:
+            qr_response = QuestionResponse.objects.create(
+                respondent=user,
+                response=response_obj,
+                question=question,
+                value=value,
+                is_valid=is_valid
+            )
+        else:
+            qr_response.user = user
+            version = qr_response.version + 1
+            qr_response.version = version
+            qr_response.value = value
+            qr_response.is_valid = is_valid
+            qr_response.save()
+
+
+        for child in child_questions:
+            child_qr = QuestionResponse.objects.filter(
+                response=response_obj, question=child
+            ).first()
+
+            logics = child.questionlogic_set.all()
+            for logic in logics:
+                val = get_response_val(request, child.get_key, child.input_type)
+
+                if val and qr_response.value == logic.values:
+
+                    is_valid, msg, value = validate_question_response(
+                        child, val
+                    )
                     if not is_valid:
-                        validation_errors[ques["sno"]] = msg
+                        validation_errors[child.get_key] = msg
+                        continue
+
+                    if child_qr:
+                        child_qr.user = user
+                        version = child_qr.version + 1
+                        child_qr.version = version
+                        child_qr.value = value
+                        child_qr.is_valid = is_valid
+
+                    else:
+                        child_qr = QuestionResponse.objects.create(
+                            respondent=user,
+                            response=response_obj,
+                            question=child,
+                            value=value,
+                            is_valid=is_valid
+                        )
+
+                else:
+                    QuestionResponse.objects.filter(
+                        response=response_obj, question=child
+                    ).delete()
+
+
     return validation_errors

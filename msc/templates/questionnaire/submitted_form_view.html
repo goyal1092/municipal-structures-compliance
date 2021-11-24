@@ -39,9 +39,9 @@
                 <span class="is-bold">Questions answered:</span>
                 <br />
                 <span class="is-bar-background">
-                  <span class="is-bar" style="width: {{ questionnaire.question_response_percentage | floatformat:0 }}%;">
+                  <span class="is-bar" style="width: {{ perc_completed | floatformat:0 }}%;">
                     <span class="is-bar-text has-nowrap">
-                      {{ questionnaire.response_count }}/{{ questionnaire.question_count }} ({{ questionnaire.question_response_percentage | floatformat:0 }}%)
+                      {{ qr_responses_count }}/{{ total_questions_count }} ({{ perc_completed | floatformat:0 }}%)
                     </span>
                   </span>
                 </span>
@@ -89,24 +89,27 @@
             
             <div>
               {% for sub_question in question.children %}
-              <h4 class="mdc-typography--headline4">
-                Question {{ sub_question.sno }}
-              </h4>
 
-              <div class="">
-                <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
-                {% if sub_question.response %}
-                  <span class="bck-subm-response">
-                    {% if question.obj.input_type == "checkbox" %}
-                      {{sub_question.response.value|join:", "}}
-                    {% else %}
-                      {{sub_question.response.value}}
-                    {% endif %}
-                  </span>
-                {% else %}
-                  <span class="bck-subm-response">N/A</span>
+              {% if sub_question.response %}
+                <h4 class="mdc-typography--headline4">
+                  Question {{ sub_question.sno }}
+                </h4>
+
+                <div class="">
+                  <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
+                  {% if sub_question.response %}
+                    <span class="bck-subm-response">
+                      {% if question.obj.input_type == "checkbox" %}
+                        {{sub_question.response.value|join:", "}}
+                      {% else %}
+                        {{sub_question.response.value}}
+                      {% endif %}
+                    </span>
+                  {% else %}
+                    <span class="bck-subm-response">N/A</span>
+                  {% endif %}
+                </div>
                 {% endif %}
-              </div>
               {% endfor %}
             </div>
           </div>

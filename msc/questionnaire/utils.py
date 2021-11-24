@@ -23,17 +23,33 @@ def serialize_question(
         question_no = string.ascii_lowercase[question_no]
 
     sno = f"{section_no}.{question_no}"
+
+    logic = {
+        "active": False
+    }
+    if is_child:
+        logic_obj = question.questionlogic_set.first()
+
+        if logic_obj:
+            logic["active"] = True
+            when = "any"
+            if logic_obj.when == "parent_value":
+                when = logic_obj.values
+            logic["when"] = when
+
     return {
         "sno": sno,
         "template": f"question/{question.input_type}.html",
         "obj": question,
-        "response": serialize_response(question, response)
+        "response": serialize_response(question, response),
+        "logic": logic
     }
 
 def serialize_response(question, response):
     if response:
         question_response = response.questionresponse_set.filter(
-            question=question).order_by("-version").first()
+            question=question
+        ).first()
         if question_response:
             return question_response
 
@@ -58,7 +74,9 @@ def get_serialized_questioner(questionnaire, organisation):
 
             child_questions = []
             for cidx, child in enumerate(list(section.question_set.filter(parent=question))):
-                child_questions.append(serialize_question(child, ques_details["sno"], cidx, response, True))
+                child_questions.append(serialize_question(
+                    child, ques_details["sno"], cidx, response, True
+                ))
 
             ques_details["children"] = child_questions
             serialized_quesions.append(ques_details)
