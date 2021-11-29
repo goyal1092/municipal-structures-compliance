@@ -1,4 +1,4 @@
-{% extends "layout.html" %} 
+{% extends "layout.html" %}
 {% load custom_tags %}
 {% block breadcrumbs %}
 <a href="{% url 'root' %}">Compliance forms</a>
@@ -54,8 +54,6 @@
                       Send Reminder
                     </span>
                   </li>
-
-                  {% if request.user.organisation.is_provincial %}
                   <li class="mdc-list-item" role="menuitem">
                         <span class="mdc-list-item__ripple"></span>
                         <form method="POST" action="{% url 'download-report' questionnaire.obj.id %}" name="report_{{questionnaire.obj.id}}">
@@ -68,7 +66,6 @@
                         </span>
                       </form>
                   </li>
-                  {% endif %}
                 </ul>
               </div>
             </div>

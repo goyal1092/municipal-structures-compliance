@@ -1,14 +1,15 @@
 
-from .base import ReportingBase
+from ..base import ReportingBase
 from xlsxwriter.utility import xl_rowcol_to_cell
 
 class AllData(ReportingBase):
 
     headers = [
-        "organisation",
+        "Province",
+        "Organisation"
     ]
 
-    def headings(self, workbook, worksheet, compiled_data):
+    def headings(self, workbook, worksheet, sections):
         row = 0
         col = 0
         heading_cell_format = workbook.add_format({
@@ -32,7 +33,7 @@ class AllData(ReportingBase):
             'valign': 'vcenter',
         })
 
-        for section in compiled_data:
+        for section in sections:
             from_cell = xl_rowcol_to_cell(row, col)
             to_cell = xl_rowcol_to_cell(row, col + len(section["questions"])-1)
             worksheet.merge_range(f'{from_cell}:{to_cell}', section["label"], merge_format)
@@ -53,39 +54,48 @@ class AllData(ReportingBase):
 
             col = col + len(section["questions"])
 
-    def render_org_data(self, workbook, worksheet, orgs):
+    def render_org_data(self, workbook, worksheet, all_data):
         row = 5
         cell_format = workbook.add_format({
             'align': 'center',
             'valign': 'vcenter',
         })
-        for org in orgs:
-            worksheet.write(row, 0, org.name, cell_format)
-            row = row + 1
+        for data in all_data:
+            for org in data["muni_organisations"]:
+                worksheet.write(row, 0, data["label"], cell_format)
+                worksheet.write(row, 1, org.name, cell_format)
+                row = row + 1
 
-    def render_data(self, workbook, worksheet, compiled_data, orgs):
-        
+    def render_data(self, workbook, worksheet, all_data, sections):
+
         cell_format = workbook.add_format({
             'align': 'center',
             'valign': 'vcenter',
         })
-        
         row = 5
         questions = []
-        for section in compiled_data:
+        for section in sections:
             questions = questions + section["questions"]
 
-        for org in orgs:
-            col = 1
-            for question in questions:
-                response = question["responses"].get(org.id , "-")
-                if isinstance(response, list):
-                    response = ",".join(response)
-                worksheet.write(row, col, response, cell_format)
-                col = col + 1
-            row = row + 1
+        for data in all_data:
+            responses = []
+            for response in data["responses"]:
+                responses = responses + response["questions"]
 
-    def format(self, workbook, worksheet, compiled_data, orgs):
-        self.headings(workbook, worksheet, compiled_data)
-        self.render_org_data(workbook, worksheet, orgs)
-        self.render_data(workbook, worksheet, compiled_data, orgs)
+            for org in data["muni_organisations"]:
+                col = 2
+                for question in questions:
+                    question_obj = next(
+                        item for item in responses if item["id"] == question["id"]
+                    )
+                    response = question_obj["responses"].get(org.id , "-")
+                    if isinstance(response, list):
+                        response = ",".join(response)
+                    worksheet.write(row, col, response, cell_format)
+                    col = col + 1
+                row = row + 1
+
+    def format(self, workbook, worksheet, all_data, sections):
+        self.headings(workbook, worksheet, sections)
+        self.render_org_data(workbook, worksheet, all_data)
+        self.render_data(workbook, worksheet, all_data, sections)

@@ -1,5 +1,5 @@
 
-from .base import ReportingBase
+from ..base import ReportingBase
 
 class ComplianceOverview(ReportingBase):
 
@@ -53,18 +53,18 @@ class ComplianceOverview(ReportingBase):
             response_count = questionnaire.question_response_count(org)
             row = row + 1
             worksheet.write(
-                row,  col, 
+                row,  col,
                 org.name, cell_format
             )
 
             if response_count == total_questions:
                 worksheet.write(
-                    row,  col+1, 
+                    row,  col+1,
                     f'{response_count}/{total_questions}', cell_format_green
                 )
             else:
                 worksheet.write(
-                    row,  col+1, 
+                    row,  col+1,
                     f'{response_count}/{total_questions}', cell_format_red
                 )
 

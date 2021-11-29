@@ -1,7 +1,7 @@
 
-from .base import ReportingBase
+from ..base import ReportingBase
 
-class CompliedYes(ReportingBase):
+class CompliedNo(ReportingBase):
 
     def render_table(self, workbook, worksheet, orgs):
         heading_cell_format = workbook.add_format({
@@ -33,7 +33,7 @@ class CompliedYes(ReportingBase):
         for org in orgs:
             row = row + 1
             worksheet.write(
-                row,  col, 
+                row,  col,
                 org.name, cell_format
             )
 
@@ -45,7 +45,7 @@ class CompliedYes(ReportingBase):
             workbook, worksheet, f'{org_name}'
         )
         self.render_subheading(
-            workbook, worksheet, 'Organisations who HAVE submitted (by Province)'
+            workbook, worksheet, 'Organisations who HAVE NOT sumbitted (by Province)'
         )
         self.render_table(
             workbook, worksheet, orgs

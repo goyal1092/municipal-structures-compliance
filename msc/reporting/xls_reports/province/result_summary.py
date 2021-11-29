@@ -1,5 +1,5 @@
 import random
-from .base import ReportingBase
+from ..base import ReportingBase
 from xlsxwriter.utility import xl_rowcol_to_cell
 
 class ResultSummary(ReportingBase):
@@ -46,7 +46,7 @@ class ResultSummary(ReportingBase):
                 'bg_color': color
             })
             cell_format.set_text_wrap()
-            
+
 
             for question in section["questions"]:
                 worksheet.set_row(row+1, 40)
@@ -88,19 +88,19 @@ class ResultSummary(ReportingBase):
             row = row + 1
             worksheet.set_row(row, 40)
             worksheet.write(
-                row,  col, 
+                row,  col,
                 org.name, cell_format
             )
 
     def render_data(self, workbook, worksheet, sections, orgs):
-        
+
         cell_format = workbook.add_format({
             'align': 'center',
             'valign': 'vcenter',
             'border': 1,
             'font_size': 14,
         })
-        
+
         row = 6
         questions = []
         for section in sections:

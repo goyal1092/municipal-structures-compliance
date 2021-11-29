@@ -1,5 +1,5 @@
 
-from .base import ReportingBase
+from ..base import ReportingBase
 
 class Cover(ReportingBase):
 
@@ -15,7 +15,7 @@ class Cover(ReportingBase):
         worksheet.set_column('A:A', 100)
         worksheet.set_column('B:B', 30)
         worksheet.write(
-            0, 0, 
+            0, 0,
             f'{org_name} Compliance Monitoring Workbook',
             heading_cell_format
         )
@@ -57,7 +57,7 @@ class Cover(ReportingBase):
         worksheet.write_url(row, col+1, f"internal:'{sheet_name}'!A1", url_format, string="Link to Tab")
 
     def format(self, workbook, worksheet):
-        self.heading(workbook, worksheet, "Western Cape")
+        self.heading(workbook, worksheet, "National")
         self.logo(
             workbook, worksheet, 'assets/images/logo_large.png'
         )
