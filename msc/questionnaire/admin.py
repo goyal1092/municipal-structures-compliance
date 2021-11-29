@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from msc.authentication.models import Share
 from .widgets import SharesWidget, ArrayWidget
 from msc.organisation.models import Organisation
+from django.contrib.admin import SimpleListFilter
 
 from django import forms
 
@@ -34,8 +35,8 @@ class QuestionnaireForm(forms.ModelForm):
 @admin.register(Questionnaire)
 class QuestionnaireAdmin(admin.ModelAdmin):
     list_display = ("name", "start", "close", "is_published",)
-    list_filter = ('is_published',)
-    search = ("name",)
+    list_filter = ('is_published', "start", "close")
+    search_fields = ("name",)
 
     fieldsets = (
         (None, {'fields': ('name',)}),
@@ -184,16 +185,44 @@ class QuestionForm(forms.ModelForm):
                 instance=None
             )
 
+class QuestionnaireFilter(SimpleListFilter):
+    title = 'Questionnaire name' # or use _('country') for translated title
+    parameter_name = 'questionnaire'
+
+    def lookups(self, request, model_admin):
+        questionnaires = Questionnaire.objects.all()
+        return [(q.id, q.name) for q in questionnaires]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(section__questionnaire_id=self.value())
+        return queryset
+
+class IsChildFilter(SimpleListFilter):
+    title = 'Is child question'
+    parameter_name = 'child'
+
+    def lookups(self, request, model_admin):
+        return [(q, q) for q in ["yes", "no"]]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            is_child = self.value() != "yes"
+            return queryset.filter(parent__isnull=is_child)
+        return queryset
+
+
 @admin.register(Question)
 class Question(admin.ModelAdmin):
     form = QuestionForm
-    search = ('name', 'text', 'section__name')
     fieldsets = (
         (None, {'fields': ('name', 'text', 'instruction', 'section',)}),
         ("Configurations", {'fields': ('input_type', 'order', 'is_mandatory', 'parent', 'choices',)}),
     )
-    list_filter = ['section', 'input_type', 'section__questionnaire__name']
+    list_filter = ['section', 'input_type', QuestionnaireFilter, IsChildFilter]
     inlines = [QuestionLogicInline,]
+    search_fields = ("text", "input_type", "name", "section__label",)
+    list_display = ("text", "name", "input_type", "order",)
 
     def get_changeform_initial_data(self, request):
         input_type = request.GET.get("input_type", None)
@@ -230,13 +259,40 @@ class Question(admin.ModelAdmin):
             obj.save()
 
 
+class QuestionnaireFilter(SimpleListFilter):
+    title = 'Questionnaire name' # or use _('country') for translated title
+    parameter_name = 'questionnaire'
+
+    def lookups(self, request, model_admin):
+        questionnaires = Questionnaire.objects.all()
+        return [(q.id, q.name) for q in questionnaires]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(questionnaire__id=self.value())
+        return queryset
+
+class PublishedQuestionnaireFilter(SimpleListFilter):
+    title = 'Published Questionnaire' # or use _('country') for translated title
+    parameter_name = 'published'
+
+    def lookups(self, request, model_admin):
+        return [(q, q) for q in ["yes", "no"]]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            show = self.value() == "yes"
+            return queryset.filter(questionnaire__is_published=show)
+        return queryset
+
+
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ("questionnaire", "label")
-    list_filter = ['questionnaire__name',]
+    list_display = ("questionnaire", "label", "order", "get_questions_count")
+    list_filter = [QuestionnaireFilter, PublishedQuestionnaireFilter]
     fields = ('questionnaire', 'label', 'order','get_questions_count', 'get_question_links', )
     readonly_fields = ('get_questions_count', 'get_question_links')
-
+    search_fields = ("label", "questionnaire__name",)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
@@ -260,7 +316,6 @@ class SectionAdmin(admin.ModelAdmin):
         ).values_list("target_object_id", flat=True)
 
         return qs.filter(questionnaire_id__in=questionnaire_ids)
-
 
     def get_questions_count(self, instance):
         if instance:
