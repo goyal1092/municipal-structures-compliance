@@ -157,7 +157,7 @@
 
             <div class="subquestion-list ml-2">
               {% for sub_question in question.children %}
-                <div class="subquestion {% if sub_question.logic.active %} {% if sub_question.logic.when == 'any' or sub_question.logic.when == question.response.value %}  mdc-show {% else %} mdc-hide {% endif %} {% endif %}"  data-logic="{{sub_question.logic.active}}" data-when="{{sub_question.logic.when}}">
+                <div class="subquestion {% if sub_question.logic.active %} {% if sub_question.logic.when in question.response.value|join:""   %}  mdc-show {% else %} mdc-hide {% endif %} {% endif %}"  data-logic="{{sub_question.logic.active}}" data-when="{{sub_question.logic.when}}">
                   <h4 class="mdc-typography--headline4">
                     Question {{ sub_question.sno }}
                     {% if sub_question.response %}
