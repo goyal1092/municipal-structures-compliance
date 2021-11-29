@@ -33,14 +33,14 @@ class Questionnaire(MSCBase):
         return Question.objects.filter(
             section__questionnaire=self, parent__isnull=True
         ).count()
-    
+
     @property
     def question_response_percentage(self):
         if self.question_count == 0:
             return 0
         else:
             return (self.response_count / self.question_count) * 100
-    
+
     @property
     def overdue(self):
         return self.close < timezone.now()
@@ -51,7 +51,7 @@ class Questionnaire(MSCBase):
         }
         if not include_child:
             q["parent__isnull"] = True
-        
+
         return  Question.objects.filter(**q)
 
     def is_submitted(self, organisation):
@@ -62,16 +62,14 @@ class Questionnaire(MSCBase):
 
     def question_response_count(self, organisation):
         response_count = 0
-        questions = Question.objects.filter(
-            section__questionnaire=self
-        )
-        for question in questions:
-            response = question.questionresponse_set.filter(
-                response__organisation=organisation
-            ).order_by("-version").first()
 
-            if response and response.is_valid:
-                response_count = response_count + 1
+        response = self.response_set.filter(
+            organisation=organisation
+        ).first()
+        if response:
+            response_count = response.questionresponse_set.filter(
+                question__parent__isnull=True
+            ).count()
 
         return response_count
 

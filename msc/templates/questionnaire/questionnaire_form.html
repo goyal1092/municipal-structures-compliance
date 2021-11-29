@@ -1,4 +1,4 @@
-{% extends "layout.html" %} 
+{% extends "layout.html" %}
 {% load custom_tags %}
 {% load humanize %}
 {% block breadcrumbs %}
@@ -6,7 +6,7 @@
 <a href="{% url 'questionnaire-detail' questionnaire.id %}">
   {{ questionnaire.name }}
 </a>
-{% endblock %} 
+{% endblock %}
 {% block content %}
 <main class="questionnaires">
   <form
@@ -38,7 +38,7 @@
           <span class="mdc-button__label">Save progress</span>
         </button>
         {% if request.user.is_admin %}
-        <button 
+        <button
           type="submit"
           name="submit_form"
           value="submit"
@@ -101,16 +101,16 @@
     >
       {{ message|safe }}
     </div>
-    {% endfor %} 
-    {% endif %} 
+    {% endfor %}
+    {% endif %}
     {% if form_save_type and form_save_type == "save" %}
     {% if errors %}
     <p class="text-info">
       We noticed some issues while saving progress. Please fix issues before you
       submit the form
     </p>
-    {% endif %} 
-    {% if form_save_type and form_save_type == "submission" %} 
+    {% endif %}
+    {% if form_save_type and form_save_type == "submission" %}
       {% if errors or submission_errors%}
         <p class="text-danger">
           Not able to submit forms as there were some issues while submitting
@@ -120,9 +120,9 @@
         </p>
       {% else %}
         <p class="text-info">Form submitted successfully</p>
-      {% endif %} 
+      {% endif %}
     {% endif %}
-    {% endif %}    
+    {% endif %}
       {% for section in sections %}
       <div class="mt-4">
         <h2 class="mdc-typography--headline2 is-section-header">{{section.label}}</h2>
@@ -133,52 +133,52 @@
             <h3 class="mdc-typography--headline3">
               Question {{ question.sno }}
 
-              {% if question.response %} 
+              {% if question.response %}
                 <span class="is-pulled-right is-size-0-75">
                   <img class="is-vertical-align-middle mr-0-25" src="/static/images/answered.png" alt="{% if question.response.version == 1 %} Answered by {% elif question.response.version > 1 %} Answer updated by {% endif %}" />
-                  {{ question.response.respondent.email }} 
+                  {{ question.response.respondent.email }}
                 </span>
               {% endif %}
             </h3>
             <div class="parent_question">
               <p class="is-size-1-4">{{ question.obj.text }}</p>
               {% autoescape off %}
-                {{ question.obj.instruction }}
+                {{ question.obj.instruction|safe }}
               {% endautoescape %}
               {% include question.template %} {% if question.obj.get_key in errors %}
               <p class="text-danger">{{errors|keyvalue:question.obj.get_key}}</p>
-              {% endif %} 
+              {% endif %}
               {% if question.obj.id in submission_errors %}
                 <p class="text-danger">
                   {{submission_errors|keyvalue:question.obj.id}}
                 </p>
               {% endif %}
             </div>
-            
+
             <div class="subquestion-list ml-2">
               {% for sub_question in question.children %}
-                <div class="subquestion {% if sub_question.logic.active %} {% if sub_question.logic.when == 'any' or sub_question.logic.when == question.response.value %}  mdc-show {% else %} mdc-hide {% endif %} {% endif %}"  data-logic="{{sub_question.logic.active}}" data-when="{{sub_question.logic.when}}">
+                <div class="subquestion {% if sub_question.logic.active %} {% if sub_question.logic.when in question.response.value|join:""   %}  mdc-show {% else %} mdc-hide {% endif %} {% endif %}"  data-logic="{{sub_question.logic.active}}" data-when="{{sub_question.logic.when}}">
                   <h4 class="mdc-typography--headline4">
                     Question {{ sub_question.sno }}
-                    {% if sub_question.response %} 
+                    {% if sub_question.response %}
                       <span class="is-pulled-right is-size-0-75">
                         <img class="is-vertical-align-middle mr-0-25" src="/static/images/answered.png" alt="{% if sub_question.response.version == 1 %} Answered by {% elif sub_question.response.version > 1 %} Answer updated by {% endif %}" />
-                        {{ sub_question.response.respondent.email }} 
+                        {{ sub_question.response.respondent.email }}
                       </span>
                     {% endif %}
                   </h4>
 
                   <div class="">
                     <p class="is-size-1-4">{{ sub_question.obj.text }}</p>
-                    <p>{{ sub_question.obj.instruction }}</p>
+                    <p>{{ sub_question.obj.instruction|safe }}</p>
                     {% with question=sub_question %}
                       {% include question.template %}
                     {% endwith %}
-                    
+
                     {% if sub_question.obj.get_key in errors %}
                       <p class="text-danger">{{errors|keyvalue:sub_question.obj.get_key}}</p>
-                    {% endif %} 
-                    
+                    {% endif %}
+
                     {% if sub_question.obj.id in submission_errors %}
                       <p class="text-danger">
                         {{submission_errors|keyvalue:sub_question.obj.id}}
