@@ -1,0 +1,120 @@
+<style>
+  .dynamic-array-widget .array-item {
+  display: flex;
+  align-items: center;
+}
+
+.dynamic-array-widget .remove {
+  height: 15px;
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.dynamic-array-widget .remove:hover {
+  cursor: pointer;
+}
+
+.dynamic-array-widget button {
+  height: 20px;
+  background: #79aec8;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+.dynamic-array-widget button:hover {
+  background: #609ab6;
+}
+
+.show-array-field{
+  display: block;
+}
+
+.hide-array-field{
+  display: none;
+}
+</style>
+
+<div class="related-widget-wrapper">
+    <div class="dynamic-array-widget {% if show %} show-array-field {% else %} hide-array-field {% endif %}" id="dynamic-array-widget">
+        <ul id="list-for-array">
+            {% for choice in choices %}
+                <li class="array-item">
+                    <input type="text" name="choices" value="{{choice}}">
+                    {% if not forloop.first %}
+                      <div class="remove">
+                          <div class="inline-deletelink"></div>
+                      </div>
+                    {% endif %}
+                </li>
+            {% empty %}
+              <input type="text" name="choices" value="">
+            {% endfor %}
+        </ul>
+        <div><input type="button" id="add-array-item" value="Add another"></div>
+    </div>
+
+    {% if not show %}
+      <p id="help-text-array-field">Choices will be enabled only for Dropdown, Checkbox & Radio question types</p>
+    {% endif %}
+</div>
+
+<script type="text/javascript">
+
+  const inputTypeField = document.getElementById("id_input_type");
+  const dynamicArrayWidget = document.getElementById("dynamic-array-widget");
+  const helpText = document.getElementById("help-text-array-field");
+  if (inputTypeField) {
+    inputTypeField.addEventListener("change", () => {
+      let show = ["dropdown", "checkbox", "radio"].indexOf(inputTypeField.value) > -1
+      if (show){
+        dynamicArrayWidget.classList.remove("hide-array-field");
+        dynamicArrayWidget.classList.add("show-array-field");
+        helpText.classList.add("hide-array-field");
+        helpText.classList.remove("show-array-field");
+      } else {
+        dynamicArrayWidget.classList.add("hide-array-field");
+        dynamicArrayWidget.classList.remove("show-array-field");
+        helpText.classList.add("show-array-field");
+        helpText.classList.remove("hide-array-field");
+      }
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.className == 'inline-deletelink'){
+      removeRow(e.target);
+    }
+  });
+
+
+  function removeRow (item){
+    let parent = item.closest(".array-item");
+    parent.remove()
+  }
+
+  const addArrayItem = document.getElementById("add-array-item");
+  if (addArrayItem) {
+    addArrayItem.addEventListener("click", () => {
+      addRow()
+    });
+  }
+
+  function addRow() {
+    const li = document.createElement('li');
+
+    li.className = 'array-item';
+
+    li.innerHTML = `
+      <input type="text" name="choices" value="">
+      <div class="remove">
+          <div class="inline-deletelink"></div>
+      </div>
+    `;
+
+    document.getElementById('list-for-array').appendChild(li);
+  }
+
+</script>

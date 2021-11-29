@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | DCOG admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">DCOG Online Compliance Monitoring Tool</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block welcome-msg %}
+    {% translate 'Welcome,' %}
+    <strong>{% firstof user.get_short_name user.get_username %} {% if user.organisation %}({{user.organisation.org_type}}){% endif %}</strong>.
+{% endblock %}

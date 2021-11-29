@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 
 from msc.authentication.models import Share
-from .widgets import SharesWidget
+from .widgets import SharesWidget, ArrayWidget
 from msc.organisation.models import Organisation
 
 from django import forms
@@ -35,6 +35,7 @@ class QuestionnaireForm(forms.ModelForm):
 class QuestionnaireAdmin(admin.ModelAdmin):
     list_display = ("name", "start", "close", "is_published",)
     list_filter = ('is_published',)
+    search = ("name",)
 
     fieldsets = (
         (None, {'fields': ('name',)}),
@@ -90,7 +91,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
         )
 
         if shared_with:
-            shared_with = [share.sharer.id for share in shared_with]
+            shared_with = [share.sharer.id for share in shared_with if share.sharer]
 
         if request.user.is_superuser or not request.user.is_national:
             organisations = Organisation.objects.filter(
@@ -136,7 +137,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                     shared_by=request.user,
                     relationship=relationship
                 )
-            
+
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -164,17 +165,34 @@ class QuestionLogicInline(admin.StackedInline):
     fk_name="question"
     extra=0
 
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+    choices = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['choices'].widget = ArrayWidget(
+                instance=self.instance
+            )
+        else:
+            self.fields['choices'].widget = ArrayWidget(
+                instance=None
+            )
+
 @admin.register(Question)
 class Question(admin.ModelAdmin):
-    model = Question
+    form = QuestionForm
+    search = ('name', 'text', 'section__name')
     fieldsets = (
         (None, {'fields': ('name', 'text', 'instruction', 'section',)}),
-        ("Configurations", {'fields': ('input_type', 'order', 'is_mandatory', 'parent', 'options',)}),
+        ("Configurations", {'fields': ('input_type', 'order', 'is_mandatory', 'parent', 'choices',)}),
     )
-    list_filter = ['section__label', 'input_type', 'section__questionnaire__name']
-    formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
-    }
+    list_filter = ['section', 'input_type', 'section__questionnaire__name']
     inlines = [QuestionLogicInline,]
 
     def get_changeform_initial_data(self, request):
@@ -200,7 +218,17 @@ class Question(admin.ModelAdmin):
         ).values_list("target_object_id", flat=True)
 
         return qs.filter(section__questionnaire_id__in=questionnaire_ids)
-    
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        user = request.user
+        if obj.input_type in ["radio", "dropdown", "checkbox"]:
+            choices = request.POST.getlist("choices", [])
+            options = obj.options
+            options["choices"] = choices
+            obj.options = options
+            obj.save()
+
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
