@@ -207,6 +207,7 @@ class QuestionnaireDetail(TemplateView):
         questionnaire = get_object_or_404(Questionnaire, pk=pk)
         organisation = request.user.organisation
         context = {}
+        validation_errors = {}
 
         response, created = Response.objects.get_or_create(
             questionnaire=questionnaire, organisation=organisation
