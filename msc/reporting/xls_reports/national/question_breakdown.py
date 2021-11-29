@@ -1,5 +1,5 @@
 
-from .base import ReportingBase
+from ..base import ReportingBase
 
 class QuestionBreakdown(ReportingBase):
 
@@ -27,7 +27,7 @@ class QuestionBreakdown(ReportingBase):
             3, 0, f'Options : {", ".join(question.options["choices"])}', heading_cell_format
         )
 
-    def render_response_table(self, workbook, worksheet, orgs, question):
+    def render_response_table(self, workbook, worksheet, all_data, question):
         heading_cell_format = workbook.add_format({
             'bold': True, 'font_size': 14,
             'font_name': self.font_name,
@@ -44,9 +44,26 @@ class QuestionBreakdown(ReportingBase):
             row,  col, 'Name of organisation',
             heading_cell_format
         )
+        subcol = 0
+        if question["input_type"] in ["radio", "dropdown", "checkbox"]:
+            for idx, choice in enumerate(question["obj"].options.get("choices", [])):
+                worksheet.set_column(subcol+1, subcol+1, 50)
+                worksheet.write(
+                    row,  subcol+1, f'Option{idx+1} [{choice}]',
+                    heading_cell_format
+                )
 
+                subcol = subcol + 1
+        elif question["input_type"] == "number":
+            worksheet.set_column(subcol+1, subcol+1, 50)
+            worksheet.write(
+                row,  subcol+1, 'Number response (Total Sum)',
+                heading_cell_format
+            )
+            subcol = subcol + 1
+        worksheet.set_column(subcol+1, subcol+1, 50)
         worksheet.write(
-            row,  col+1, 'Response',
+            row,  subcol+1, 'Forms not Submitted (no. of orgs.)',
             heading_cell_format
         )
 
@@ -59,21 +76,46 @@ class QuestionBreakdown(ReportingBase):
         cell_format.set_align('center')
         cell_format.set_align('vcenter')
 
-        for org in orgs:
-            response = question["responses"].get(org.id, "-")
-            row = row + 1
-            worksheet.write(
-                row,  col, 
-                org.name, cell_format
-            )
-            if isinstance(response, list):
-                response = ",".join(response)
-            worksheet.write(
-                row,  col+1, 
-                response, cell_format
-            )
+        row = row +1
+        for data in all_data:
+            questions = []
+            for q in data["responses"]:
+                questions = questions + q["questions"]
 
-    def format(self, workbook, worksheet, org_name, all_orgs, question):
+            worksheet.write(
+                row,  col,
+                data["label"], cell_format
+            )
+            subcol = 1
+            question_obj = next(
+                item for item in questions if item["id"] == question["id"]
+            )
+            if question["input_type"] in ["dropdown", "radio", "checkbox"]:
+                for choice in question["obj"].options.get("choices", []):
+                    worksheet.write(
+                        row,  subcol,
+                        f'{question_obj["grouped_value"].get(choice, 0)} ({choice})',
+                        cell_format
+                    )
+                    subcol = subcol + 1
+            elif question["input_type"] == "number":
+                worksheet.write(
+                    row,  subcol,
+                    question_obj["grouped_value"],
+                    cell_format
+                )
+                subcol = subcol + 1
+
+            munis = data["muni_organisations"].count()
+            submitted = data["submitted"].count()
+            worksheet.write(
+                row,  subcol,
+                munis - submitted,
+                cell_format
+            )
+            row = row + 1
+
+    def format(self, workbook, worksheet, org_name, total_data, question):
         self.logo(
             workbook, worksheet, 'assets/images/logo_large.png'
         )
@@ -90,5 +132,5 @@ class QuestionBreakdown(ReportingBase):
             )
 
         self.render_response_table(
-            workbook, worksheet, all_orgs, question
+            workbook, worksheet, total_data, question
         )
