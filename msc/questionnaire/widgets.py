@@ -9,6 +9,32 @@ from msc.authentication.models import Share
 from msc.organisation.models import Organisation
 
 
+
+class ArrayWidget(Widget):
+    template_name = 'widgets/array_widget.html'
+
+    def __init__(self, attrs=None, instance=None, current_user=None):
+        self.instance = instance
+        super().__init__(attrs=attrs)
+
+    def get_context(self, name, value, attrs=None, instance=None):
+
+        instance = self.instance
+        choices = []
+        show = False
+        if instance:
+            choices = instance.options.get("choices", [])
+            if instance.input_type in ["dropdown", "checkbox", "radio"]:
+                show = True
+
+        context = {
+            "show": show,
+            "choices": choices
+        }
+
+        return context
+
+
 class SharesWidget(Widget):
     template_name = 'widgets/share.html'
 
