@@ -22,33 +22,39 @@ def split_timeuntil(duration):
 
 @register.filter
 def submitted_questionnaires(questionnaire, user):
-    submitted_response_count = questionnaire.response_set.filter(
+    submitted_responses = questionnaire.response_set.filter(
         is_submitted=True
-    ).count()
+    )
     total_count = 0
 
-    organisation_ids = Share.objects.filter(
+    organisation_shares = Share.objects.filter(
         relationship="viewer",
         target_content_type__model="questionnaire",
         sharer_content_type__model="organisation",
         target_object_id=questionnaire.id
-    ).values_list("sharer_object_id", flat=True)
+    ).order_by("sharer_object_id").distinct()
 
     if user.is_national:
-        total_count = len(organisation_ids)
-
+        total_count = organisation_shares.count()
     elif user.is_provincial:
-        total_count = Organisation.objects.filter(
-            id__in=organisation_ids, parent=user.organisation
-        ).count()
-    
+
+        sharer_ids = [
+            share.sharer_object_id for share in organisation_shares if share.sharer.parent == user.organisation
+        ]
+        total_count = len(sharer_ids)
+        submitted_responses = submitted_responses.filter(
+            organisation_id__in=sharer_ids
+        )
+
+    submitted_response_count = submitted_responses.count()
     #TODO: Better way to prevent division by zero
-    if total_count == 0:
-        total_count = 1
+    perc = 0.0
+    if total_count:
+        perc = round((float(submitted_response_count)/total_count)*100,1)
 
     html = get_template(f"subtemplate/progress_bar.html").render({
         "text": f'{submitted_response_count}/{total_count}',
-        "per": round((float(submitted_response_count)/total_count)*100,1),
+        "per": perc,
     })
 
     return html
@@ -89,5 +95,5 @@ def question_summary(question, user):
             return f'{max_count}/{total} ({per}%) - {max_choice}'
         except:
             pass
-        
+
     return "-"
