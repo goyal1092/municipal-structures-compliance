@@ -62,7 +62,6 @@ class QuestionnaireAdmin(admin.ModelAdmin):
         ques_content_type = ContentType.objects.get_for_model(
             Questionnaire
         )
-
         if not change:
             creator_org = user.organisation_id
             if user.is_superuser:
@@ -72,7 +71,9 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                     pass
 
             if not creator_org:
-                creator_org = Organisation.objects.filter(parent__isnull=True).first().id
+                creator_org = Organisation.objects.filter(
+                    parent__isnull=True
+                ).first().id
 
             # creator share
             Share.objects.create(
@@ -176,14 +177,9 @@ class QuestionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance:
-            self.fields['choices'].widget = ArrayWidget(
-                instance=self.instance
-            )
-        else:
-            self.fields['choices'].widget = ArrayWidget(
-                instance=None
-            )
+        self.fields['choices'].widget = ArrayWidget(
+            instance=self.instance, input_type=self.input_type
+        )
 
 class QuestionnaireFilter(SimpleListFilter):
     title = 'Questionnaire name' # or use _('country') for translated title
@@ -223,6 +219,13 @@ class Question(admin.ModelAdmin):
     inlines = [QuestionLogicInline,]
     search_fields = ("text", "input_type", "name", "section__label",)
     list_display = ("text", "name", "input_type", "order",)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.input_type = None
+        if not obj:
+            form.input_type = request.GET.get("input_type", None)
+        return form
 
     def get_changeform_initial_data(self, request):
         input_type = request.GET.get("input_type", None)
