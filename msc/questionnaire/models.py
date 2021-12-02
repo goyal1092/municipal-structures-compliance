@@ -3,7 +3,10 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericRelation
 from ckeditor.fields import RichTextField
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 from .base import MSCBase
 
@@ -17,6 +20,10 @@ class Questionnaire(MSCBase):
     start = models.DateTimeField(blank=True, null=True)
     close = models.DateTimeField(blank=True, null=True)
     is_published = models.BooleanField(default=True)
+    shareslist = GenericRelation(Share,
+        content_type_field='target_content_type',
+        object_id_field='target_object_id',
+        related_query_name="questionnaire_shares")
 
     class Meta:
         ordering = ['-created']
@@ -152,6 +159,9 @@ class Questionnaire(MSCBase):
 
         return options
 
+@receiver(pre_delete, sender=Questionnaire, dispatch_uid='questionnaire_delete_signal')
+def delete_linked_shares(sender, instance, using, **kwargs):
+    instance.shareslist.all().delete()
 
 class Section(MSCBase):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)

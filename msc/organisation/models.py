@@ -8,7 +8,11 @@ from django.dispatch import receiver
 from django.template.loader import get_template
 from django.urls import reverse
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.contenttypes.fields import GenericRelation
+from msc.authentication.models import Share
 
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 class Group(MSCBase):
     name = models.CharField(max_length=256)
@@ -23,6 +27,10 @@ class Organisation(MSCBase):
         "self", on_delete=models.CASCADE, null=True, blank=True)
     org_type = models.ForeignKey(
         "Group", on_delete=models.CASCADE, null=True, blank=True)
+    shareslist = GenericRelation(Share,
+        content_type_field='sharer_content_type',
+        object_id_field='sharer_object_id',
+        related_query_name="organisation_shares")
 
     def __str__(self):
         return self.name
@@ -45,6 +53,10 @@ class Organisation(MSCBase):
     @property
     def is_provincial(self):
         return self.parent and self.parent.parent == None
+
+@receiver(pre_delete, sender=Organisation, dispatch_uid='org_delete_signal')
+def delete_linked_shares(sender, instance, using, **kwargs):
+    instance.shareslist.all().delete()
 
 class EmailActivity(MSCBase):
     questionnaire = models.ForeignKey(

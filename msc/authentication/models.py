@@ -104,9 +104,21 @@ class Share(MSCBase):
     sharer_content_type = models.ForeignKey(ContentType, limit_choices_to=sharer_objects, related_name="%(app_label)s_sharer_%(class)s_related", on_delete=models.CASCADE)
     sharer_object_id = models.PositiveIntegerField()
     sharer = GenericForeignKey('sharer_content_type', 'sharer_object_id')
-    # how the sharer is related - creator, admin, editor, viewer
     relationship = models.CharField(choices=settings.SHARER_RELATIONSHIP_TYPES, max_length=32)
     shared_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+
+            share = Share.objects.filter(
+                target_content_type=self.target_content_type,
+                target_object_id = self.target_object_id,
+                sharer_content_type=self.sharer_content_type,
+                sharer_object_id = self.sharer_object_id,
+            ).first()
+            if share is not None:
+                return share
+        return super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['-created']
