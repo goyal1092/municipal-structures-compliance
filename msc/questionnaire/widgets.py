@@ -13,25 +13,30 @@ from msc.organisation.models import Organisation
 class ArrayWidget(Widget):
     template_name = 'widgets/array_widget.html'
 
-    def __init__(self, attrs=None, instance=None, current_user=None):
+    def __init__(self, attrs=None, instance=None, input_type=None):
+        self.input_type = input_type
         self.instance = instance
         super().__init__(attrs=attrs)
 
     def get_context(self, name, value, attrs=None, instance=None):
-
         instance = self.instance
+        input_type = instance.input_type
+        if not input_type:
+            input_type = self.input_type
         choices = []
         show = False
         if instance:
             choices = instance.options.get("choices", [])
-            if instance.input_type in ["dropdown", "checkbox", "radio"]:
-                show = True
+        if input_type in ["dropdown", "checkbox", "radio"]:
+            show = True
+
+        if not choices and input_type == "radio":
+            choices = ["Yes", "No"]
 
         context = {
             "show": show,
             "choices": choices
         }
-
         return context
 
 
