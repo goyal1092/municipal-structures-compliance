@@ -104,8 +104,15 @@ def save_response(request, questionnaire, response_obj):
             for logic in logics:
                 val = get_response_val(request, child.get_key, child.input_type)
 
-                if val and qr_response.value == logic.values:
+                is_logic_valid = False
+                if val:
+                    if isinstance(qr_response.value, list):
+                        is_logic_valid = logic.values in qr_response.value
+                    else:
+                        is_logic_valid = logic.values == qr_response.value
 
+
+                if is_logic_valid:
                     is_valid, msg, value = validate_question_response(
                         child, val
                     )
@@ -119,6 +126,7 @@ def save_response(request, questionnaire, response_obj):
                         child_qr.version = version
                         child_qr.value = value
                         child_qr.is_valid = is_valid
+                        child_qr.save()
 
                     else:
                         child_qr = QuestionResponse.objects.create(

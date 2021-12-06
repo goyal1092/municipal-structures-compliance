@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.http import Http404
+from django.urls import reverse
 
 from msc.questionnaire.models import Questionnaire
 from msc.organisation.models import Organisation, Group
@@ -178,6 +179,20 @@ class QuestionnaireDetail(TemplateView):
         ):
             return redirect("forms-active")
 
+        if request.user.is_national or request.user.is_provincial:
+            return redirect(reverse('form-preview', kwargs={"pk": kwargs["pk"]}))
+
+        response = Response.objects.filter(
+            questionnaire=questionnaire, organisation=request.user.organisation,
+            is_submitted=True
+        ).first()
+
+        if response:
+            return redirect(reverse('form-submitted-response', kwargs={
+                "questionnaire_id": kwargs["pk"],
+                "organisation_id": request.user.organisation.id
+            }))
+
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -273,8 +288,8 @@ def submited_form_view(request, questionnaire_id, organisation_id):
     organisation = get_object_or_404(Organisation, pk=organisation_id)
 
     if not user.is_national:
-        organisations = organisation.get_children(include_self=True)
-        if user.organisation not in organisations:
+        organisations = user.organisation.get_children()
+        if organisation not in organisations:
             raise Http404
 
     response = Response.objects.filter(
@@ -294,3 +309,45 @@ def submited_form_view(request, questionnaire_id, organisation_id):
         "perc_completed":  (float(qr_responses)/total_questions)*100,
     }
     return render(request, 'questionnaire/submitted_form_view.html', context)
+
+
+class QuestionnaireDetailPreview(TemplateView):
+    template_name = 'questionnaire/questionnaire_form.html'
+
+    @method_decorator(login_required)
+    @method_decorator(check_user_org)
+    def dispatch(self, request, *args, **kwargs):
+        questionnaire = get_object_or_404(Questionnaire, pk=kwargs["pk"])
+        share = Share.objects.filter(
+            target_content_type__model="questionnaire",
+            sharer_content_type__model="organisation",
+            sharer_object_id=request.user.organisation.id,
+            target_object_id=questionnaire.id
+        ).first()
+        if not share:
+            return redirect("forms-active")
+
+        if not request.user.is_national and not request.user.is_provincial:
+            return redirect(reverse('questionnaire-detail', kwargs={"pk": kwargs["pk"]}))
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        questionnaire = get_object_or_404(Questionnaire, pk=pk)
+        organisation = request.user.organisation
+
+        total_questions = questionnaire.question_count
+        response_count = 0
+        perc = 0.0
+
+        if total_questions > 0:
+            perc = round((float(response_count)/total_questions)*100,1)
+        context = {
+            "questionnaire": questionnaire,
+            "sections": get_serialized_questioner(questionnaire, organisation),
+            "response_count": response_count,
+            "total_questions": total_questions,
+            "per_completed": perc
+        }
+        return render(request, 'questionnaire/questionnaire_preview_form.html', context)
