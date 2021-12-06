@@ -273,8 +273,8 @@ def submited_form_view(request, questionnaire_id, organisation_id):
     organisation = get_object_or_404(Organisation, pk=organisation_id)
 
     if not user.is_national:
-        organisations = organisation.get_children(include_self=True)
-        if user.organisation not in organisations:
+        organisations = user.organisation.get_children()
+        if organisation not in organisations:
             raise Http404
 
     response = Response.objects.filter(
