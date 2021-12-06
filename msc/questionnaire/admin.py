@@ -142,7 +142,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                 )
     #
     def get_preview(self, obj):
-        if obj:
+        if obj.id:
             url = reverse('form-preview', kwargs={"pk": obj.id})
             return mark_safe(f"<a href={url} target='_blank'>Preview Link</a>")
         else:

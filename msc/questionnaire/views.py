@@ -324,9 +324,7 @@ class QuestionnaireDetailPreview(TemplateView):
             sharer_object_id=request.user.organisation.id,
             target_object_id=questionnaire.id
         ).first()
-        if (
-            not share or questionnaire.start > timezone.now() or not questionnaire.is_published
-        ):
+        if not share:
             return redirect("forms-active")
 
         if not request.user.is_national and not request.user.is_provincial:
