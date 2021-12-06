@@ -34,15 +34,16 @@ class QuestionnaireForm(forms.ModelForm):
 
 @admin.register(Questionnaire)
 class QuestionnaireAdmin(admin.ModelAdmin):
-    list_display = ("name", "start", "close", "is_published",)
+    list_display = ("name", "start", "close", "is_published", "get_preview")
     list_filter = ('is_published', "start", "close")
     search_fields = ("name",)
 
     fieldsets = (
-        (None, {'fields': ('name',)}),
+        (None, {'fields': ('name','get_preview',)}),
         ("Configurations", {'fields': (('start', 'close',), "is_published",)}),
         ('Shares', {'fields': ('shares',)}),
     )
+    readonly_fields = ("get_preview",)
     form = QuestionnaireForm
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
@@ -139,7 +140,15 @@ class QuestionnaireAdmin(admin.ModelAdmin):
                     shared_by=request.user,
                     relationship=relationship
                 )
+    #
+    def get_preview(self, obj):
+        if obj:
+            url = reverse('form-preview', kwargs={"pk": obj.id})
+            return mark_safe(f"<a href={url} target='_blank'>Preview Link</a>")
+        else:
+            return 'Not Available'
 
+    get_preview.short_description = 'Preview'
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

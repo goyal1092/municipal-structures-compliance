@@ -4,7 +4,8 @@ from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from .questionnaire.views import (
     questionnaire_list, questionnaire_list_submitted,
-    QuestionnaireDetail, active_form_summary_view, submited_form_view
+    QuestionnaireDetail, active_form_summary_view, submited_form_view,
+    QuestionnaireDetailPreview
 )
 from .organisation.views import login, send_reminder
 from .response.views import save_response
@@ -24,5 +25,5 @@ urlpatterns = [
     path("forms/<int:pk>/summary", active_form_summary_view, name="form-summary"),
     path("forms/submitted/<int:questionnaire_id>/<int:organisation_id>/", submited_form_view, name="form-submitted-response"),
     path("download/report/<int:questionnaire_id>/", download_report, name="download-report"),
+    path("forms/<int:pk>/preview/", QuestionnaireDetailPreview.as_view(), name="form-preview"),
 ]
-
