@@ -1,4 +1,4 @@
-
+ 
 from ..base import ReportingBase
 
 class CompliedNo(ReportingBase):
