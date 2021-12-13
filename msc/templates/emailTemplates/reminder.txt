@@ -1,13 +1,19 @@
 {% autoescape off %}
 
+Dear Colleague,
 
-Form Reminder : {{ questionnaire.name }}.
+We are sending you this message to remind you that you have not yet submitted your {{ questionnaire.name|title }}.
+Please ensure that you comply with the submission date as stated on your user dashboard.
 
-{{ user_msg|escape|safe }}
-
+Click access the link below to access your form (Please copy and paste the link into your browser window).
 Your form link: {{base_url}}{{link}}
-Please copy and paste the link it into a browser window.
 
-This email was sent on behalf of {{ sender.email }}, who has invited you to take part in their questionnaire: {{ questionnaire.name|title }}. If you believe you’ve received this email by mistake, please let us know.
+Message from {{sender.email}} : {{ user_msg|escape|safe }}
+
+For any queries, you can always contact our support {{support_address}}.
+
+Thank you for using the DCOG Online Monitoring tool.
+
+{{ sender_address }}
 
 {% endautoescape %}

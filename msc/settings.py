@@ -271,6 +271,8 @@ EMAIL_USE_TLS = True
 # EMAIL_PORT = 1025
 
 DEFAULT_FROM_EMAIL = env('EMAIL_FROM_ADDRESS', default='no-reply@openup.org.za')
+EMAIL_SENDER = env('EMAIL_SENDER', default='The DCOG Online Monitoring tool Team')
+SUPPORT_EMAIL = env('SUPPORT_EMAIL', default='support@openup.org.za')
 
 TAG_MANAGER_ENABLED = env.bool("TAG_MANAGER_ENABLED", False)
 if TAG_MANAGER_ENABLED:
