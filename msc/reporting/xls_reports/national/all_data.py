@@ -60,6 +60,8 @@ class AllData(ReportingBase):
             'align': 'center',
             'valign': 'vcenter',
         })
+        cell_format.set_text_wrap()
+        worksheet.set_column(row, 1, 70)
         for data in all_data:
             for org in data["muni_organisations"]:
                 worksheet.write(row, 0, data["label"], cell_format)

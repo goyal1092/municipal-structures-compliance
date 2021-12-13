@@ -1,17 +1,21 @@
 {% autoescape off %}
 
-Hello {{ obj.username }},
+Dear {{obj.username}},
 
 Welcome to DCOG Online Monitoring tool.
+To access the compliance dashboard please click on the link below (or copy and paste the link into your browser window).
+{{base_url}}
 
-To Account details are:
-
+Your account login details are as follows:
 Email : {{obj.email}}
 Password : {{ password }}
+To change your password please click the link below (or copy and paste the link into a browser window): {{base_url}}{{link}}
 
-you can change your password from here: {{base_url}}{{link}}
-Please copy and paste the link it into a browser window.
+This email was sent to you on behalf of {{sender.email}} from National COGTA. They have invited you to use the DCOG Online Monitoring tool to manage your compliance forms.
+If you have received this email by mistake, please let us know at {{support_address}}
 
-This email was sent on behalf of {{ sender.email }} from {{ sender.organisation.email }}, who has invited you to DCOG Online Monitoring tool to take questionnaires for {{ obj.organisation.name }}. If you believe you’ve received this email by mistake, please let us know.
+Thank you for using the DCOG Online Monitoring tool.
+
+{{ sender_address }}
 
 {% endautoescape %}

@@ -43,7 +43,7 @@ class CompliedNo(ReportingBase):
             workbook, worksheet, 'assets/images/logo_large.png'
         )
         self.heading(
-            workbook, worksheet, f'{org_name}'
+            workbook, worksheet, f'{org_name} on Complied No'
         )
         self.render_table(
             workbook, worksheet, data

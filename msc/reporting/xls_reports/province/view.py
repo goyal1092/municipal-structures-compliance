@@ -20,7 +20,7 @@ def create_excel(
     # Cover Page
     cover = Cover()
     cover_page = cover.create_sheet(workbook, 'Cover Page')
-    cover.format(workbook, cover_page)
+    cover.format(workbook, cover_page, org_name)
 
     # All Data Tab
     all_data = AllData()

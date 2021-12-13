@@ -108,10 +108,14 @@ class EmailActivity(MSCBase):
         context = self.get_context(kwargs)
         subject = self.get_subject()
         from_address = settings.DEFAULT_FROM_EMAIL
+        support_address = settings.SUPPORT_EMAIL
+        sender_address = settings.EMAIL_SENDER
         protocol = "https://" if request.is_secure() else "http://"
         context.update({
             "sender": self.user,
-            "base_url": f"{protocol}{request.get_host()}"
+            "base_url": f"{protocol}{request.get_host()}",
+            "support_address": support_address,
+            "sender_address": sender_address,
         })
         to = [u.email for u in self.to_users.all()]
 
