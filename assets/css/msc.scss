@@ -483,7 +483,7 @@ img.is-aligned-center {
     width: 25%;
     background-color: #b9f18d;
     border-radius: 10px;
-    
+
     .is-bar-text {
       font-size: smaller;
       padding: 0.5em;
@@ -529,7 +529,7 @@ img.is-aligned-center {
 
 .search-box-submitted-form .mdc-text-field__icon--leading{
   margin-left: 0;
-  margin-right: 4px; 
+  margin-right: 4px;
 }
 
 .dropdown-width-auto{
@@ -572,7 +572,7 @@ img.is-aligned-center {
     padding: 0 1.2em;
     min-width: 37em;
   }
-  
+
   .mdc-dialog__header {
     border-bottom: 1px solid transparent;
     display: inline-flex;
@@ -657,4 +657,18 @@ img.is-aligned-center {
 
 .mdc-show{
   display: block;
+}
+
+.inline-list-options{
+  li{
+    font-size: 16px;
+    vertical-align: middle;
+    align-items: center;
+    padding: 5px 20px;
+  }
+
+  i {
+    font-size: 20px;
+    vertical-align: middle;
+  }
 }
