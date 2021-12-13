@@ -22,6 +22,7 @@ class ResultSummary(ReportingBase):
                 'font_size': 18,
                 'bg_color': color
             })
+            merge_format.set_text_wrap()
             from_cell = xl_rowcol_to_cell(row, col)
             to_cell = xl_rowcol_to_cell(row + len(section["questions"])-1, col)
             worksheet.merge_range(

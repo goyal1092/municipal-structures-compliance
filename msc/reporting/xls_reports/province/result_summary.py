@@ -23,6 +23,7 @@ class ResultSummary(ReportingBase):
                 'font_size': 18,
                 'bg_color': color
             })
+            merge_format.set_text_wrap()
             from_cell = xl_rowcol_to_cell(row, col)
             to_cell = xl_rowcol_to_cell(row, col + len(section["questions"])-1)
             worksheet.set_column(f'{from_cell}:{to_cell}', 50)
@@ -38,18 +39,17 @@ class ResultSummary(ReportingBase):
                 'font_size': 14,
             })
             cell_format_align.set_bg_color('#C5C5C5')
-
+            cell_format_align.set_text_wrap()
             cell_format = workbook.add_format({
                 'valign': 'vcenter',
                 'border': 1,
                 'font_size': 14,
-                'bg_color': color
             })
             cell_format.set_text_wrap()
 
 
             for question in section["questions"]:
-                worksheet.set_row(row+1, 40)
+                worksheet.set_row(row+1, 70)
                 worksheet.write(row+1, subcol, question["text"], cell_format)
                 worksheet.write(row+2, subcol, question["label"], cell_format_align)
                 subcol = subcol + 1
@@ -125,7 +125,7 @@ class ResultSummary(ReportingBase):
             workbook, worksheet, f'{org_name}'
         )
         self.render_subheading(
-            workbook, worksheet, 'Western Cape Form Result Summary'
+            workbook, worksheet, f'{org_name} Cape Form Result Summary'
         )
 
         self.render_table_headings(workbook, worksheet, orgs, sections)
