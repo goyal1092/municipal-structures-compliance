@@ -29,6 +29,10 @@ class CustomUserCreationForm(UserCreationForm):
 
 
     def clean(self):
+        email = self.cleaned_data.get('email', None)
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise ValidationError('Email address already exists')
+
         if self.cleaned_data['is_admin'] == True and self.cleaned_data['organisation'] is None:
             raise ValidationError('Please select organisation to set user as admin of the organisation')
         return self.cleaned_data
