@@ -3,15 +3,9 @@ from django.db.models import Q
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
-        try: #to allow authentication through phone number or any other field, modify the below statement
-            user = UserModel.objects.get(Q(username__exact=username) | Q(email__exact=username))
-        except UserModel.DoesNotExist:
-            UserModel().set_password(password)
-        except MultipleObjectsReturned:
-            return User.objects.filter(email=username).order_by('id').first()
-        else:
-            if user.check_password(password) and self.user_can_authenticate(user):
-                return user
+        user = UserModel.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).first()
+        if user and user.check_password(password) and self.user_can_authenticate(user):
+            return user
 
     def get_user(self, user_id):
         try:
